@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gastro Media Center</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --bg-grad: radial-gradient(circle at center, #1e5799 0%, #133d6b 50%, #001224 100%);
+            --txt: #ffffff;
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glossy: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%);
+            --acc: #00d2ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-grad);
+            background-attachment: fixed;
+            color: var(--txt);
+            margin: 0;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+            /* Padding unten für die Android-Gestenleiste */
+            padding-bottom: calc(50px + env(safe-area-inset-bottom));
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Verhindert, dass der Titel unter die Kamera rutscht */
+            padding: calc(20px + env(safe-area-inset-top)) 30px 20px 30px;
+            background: transparent;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        #titel {
+            font-size: 2.2rem;
+            font-weight: 200;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+
+        .btn {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: var(--glass);
+            height: 140px;
+            border-radius: 12px;
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--glossy);
+            pointer-events: none;
+        }
+
+        .card:active {
+            transform: scale(0.95);
+            border-color: var(--acc);
+            box-shadow: 0 0 40px var(--acc);
+            background: rgba(0, 210, 255, 0.2);
+        }
+
+        .list-item {
+            background: var(--glass);
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 5px solid var(--acc);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .list-item:active { background: rgba(0, 210, 255, 0.3); }
+
+        .detail {
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px; 
+            padding: 25px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .rechner-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--acc);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
+        .rechner-box input {
+            width: 80px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-bottom: 2px solid var(--acc);
+            color: white;
+            font-size: 1.4rem;
+            text-align: center;
+            outline: none;
+        }
+
+        h3 {
+            color: var(--acc);
+            font-weight: 300;
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+
+        ul { list-style: none; padding: 0; }
+        
+        li {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        li b {
+            min-width: 90px;
+            display: inline-block;
+            color: var(--acc);
+            margin-right: 15px;
+            text-align: left;
+        }
+
+        li span { flex: 1; }
+
+        .hygiene {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--acc);
+            color: var(--acc);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 600px) {
+            #titel { font-size: 1.5rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div id="titel">START</div>
+        <button id="back" class="btn hidden" onclick="goB()">Zurück</button>
+    </header>
+
+    <div class="container" id="app"></div>
+
+    <script>
+        const pw = "5556"; // Hier dein Wunschpasswort eintragen
+if (sessionStorage.getItem("access") !== "true") {
+    let input = prompt("Bitte Passwort eingeben:");
+    if (input === pw) {
+        sessionStorage.setItem("access", "true");
+    } else {
+        document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50px;'>Zugriff verweigert.</h1>";
+        window.stop();
+    }
+}
+        // HIER DEINE REZEPTE EINFÜGEN
+        const rezepte = [
+
+            /* DEINE REZEPTE HIER */
+           {
+    id: "muscheln_pikant",
+    posten: "Saucier",
+    titel: "Muscheln Pikant",
+    z: [
+        { m: 2, e: "Dosen", n: "geschälte Tomaten" },
+        { m: 2, e: "Stk.", n: "Tomaten (gehackt)" },
+        { m: 1, e: "Stange", n: "Lauch" },
+        { m: 0.5, e: "Knolle", n: "Sellerie" },
+        { m: 0.5, e: "Stk.", n: "Zwiebel" },
+        { m: 1, e: "EL", n: "Tomatenmark" },
+        { m: 4, e: "TL", n: "Paprika scharf" },
+        { m: 1, e: "TL", n: "Cayennepfeffer" },
+        { m: 2, e: "Stk.", n: "Zitrone" },
+        { m: 2, e: "Stk.", n: "Limette" },
+        { m: 0, e: "n.B.", n: "Knoblauchöl" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "geschroteter Pfeffer" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "1. Vorbereitung: Den Lauch in feine Streifen (Julienne), den Sellerie in feine Würfel (Brunoise) und die halbe Zwiebel ebenfalls in feine Würfel schneiden.<br><br>2. Basis & Röstaromen: Die Zwiebeln anschwitzen. Cayennepfeffer und Paprika zugeben und mit anrösten. Einen Löffel Tomatenmark sowie einen großzügigen Spritzer Knoblauchöl hinzufügen und ebenfalls kurz mitrösten.<br><br>3. Ablöschen & Bodensatz: Direkt die geschälten Tomaten zugeben. Den Herd ausschalten und 2 Minuten warten. Danach den Bodenansatz lösen - die Säure und der Temperaturverlust erledigen hier die Arbeit.<br><br>4. Zitrusfrüchte: Von den Zitronen und Limetten die Zesten abreiben. Die Früchte halbieren, den Saft in den Topf pressen und die ausgepressten Hälften mit in den Sud geben (diese werden später wieder herausgefischt).<br><br>5. Garen & Finish: Salz, Pfeffer und etwas Zucker zugeben. Den Sud aufkochen, dann den vorbereiteten Sellerie und den Lauch hinzufügen. Den Herd sofort wieder ausschalten, final abschmecken und abfüllen."
+},
+{
+    id: "hackmasse",
+    posten: "Saucier",
+    titel: "Hackmasse",
+    z: [
+        { m: 3000, e: "gr", n: "Hack gemischt" },
+        { m: 6, e: "Stk.", n: "Eier" },
+        { m: 200, e: "gr", n: "Senf" },
+        { m: 40, e: "gr", n: "Salz" },
+        { m: 4, e: "gr", n: "Pfeffer weiß" },
+        { m: 3, e: "Stk.", n: "Knoblauchzehen" },
+        { m: 5, e: "gr", n: "Majoran" },
+        { m: 1, e: "Stk.", n: "weiße Zwiebel" },
+        { m: 200, e: "gr", n: "Paniermehl" }
+    ],
+    a: "1. Wolfen: Zuerst das Fleisch, dann den Knoblauch und zuletzt die Zwiebel durch den Fleischwolf lassen. Tipp: Das Fleisch muss kalt sein, damit das Fett nicht schmiert!<br><br>2. Würzen & Binden: Gewürze (Salz, Pfeffer, Majoran), Senf, Paniermehl und die Eier gleichmäßig über die Oberfläche verteilen.<br><br>3. Mengen (Homogenisieren): Die Masse zügig von Hand vermengen, bis eine homogene Bindung entsteht. Nicht zu lange kneten, sonst wird das Eiweiß 'brandig' und die Masse zu fest. 10 Minuten stehen lassen, damit das Paniermehl weich wird.<br><br>4. Garprobe: Eine Miniboulette abdrehen und braten. Abschmecken, um die Würzung und Textur (Oberfläche reisst auf) final zu prüfen.<br><br>5. Portionieren & Finish: Die Masse mit nassen Händen (verhindert Kleben) in die gewünschte Form bringen. Auf eine glatte Oberfläche achten, damit die Struktur beim Braten nicht aufreißt."
+},
+{
+    id: "hirschgulasch",
+    posten: "Saucier",
+    titel: "Hirschgulasch",
+    z: [
+        { m: 5000, e: "gr", n: "Hirschgulasch" },
+        { m: 2500, e: "gr", n: "weiße Zwiebeljulienne" },
+        { m: 3, e: "EL", n: "Tomatenmark" },
+        { m: 1, e: "Fl.", n: "Rotwein" },
+        { m: 40, e: "ml", n: "Gin" },
+        { m: 2, e: "Stk.", n: "Lorbeerblätter" },
+        { m: 8, e: "Stk.", n: "Wacholderbeeren" },
+        { m: 8, e: "Stk.", n: "Pimentbeeren" },
+        { m: 6, e: "Stk.", n: "Pfefferkörner" },
+        { m: 1, e: "Stk.", n: "Rosmarinzweig" },
+        { m: 5, e: "Stk.", n: "Thymianzweige" },
+        { m: 1, e: "Stk.", n: "Glasschale Estragon (groß)" },
+        { m: 3, e: "EL", n: "Preiselbeeren" },
+        { m: 2, e: "EL", n: "Gelee" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer geschrotet" }
+    ],
+    a: "1. Scharf anbraten: Fleisch würzen. Topf maximal erhitzen, wenig Fett nutzen. Fleisch in kleinen Chargen scharf anbraten (darf nicht kochen/safteln -> Ammoniakgefahr!). Fleisch herausnehmen.<br><br>2. Sautieren & Tomatieren: Zwiebeln im Bratensatz glasig dünsten (sautieren). Tomatenmark zugeben und dunkelbraun rösten (tomatieren).<br><br>3. Deglacieren: Gin zugeben und reduzieren bis er verdampft ist. Dreimal mit Rotwein ablöschen und jeweils stark einkochen (glacieren). Falls zu hell: Vorgang mit Wasser wiederholen, bis die Farbe tiefdunkel ist.<br><br>4. Sud kochen: Mit Wasser auffüllen. Preiselbeeren, Gelee und Gewürzkugel zugeben. Sud aufkochen lassen.<br><br>5. Schmoren: Das Fleisch erst in den kochenden Sud geben (verhindert Auslaugen). Bei mäßiger Hitze ca. 1,5 - 2 Stunden sanft schmoren."
+},
+{
+    id: "hollandaise",
+    posten: "Saucier",
+    titel: "Hollandaise",
+    z: [
+        { m: 2, e: "Kellen", n: "Eigelb (klein)" },
+        { m: 2, e: "Kellen", n: "Weißwein (klein)" },
+        { m: 1, e: "Kelle", n: "Spargelfond (klein)" },
+        { m: 1250, e: "ml", n: "Butter" },
+        { m: 1, e: "Kelle", n: "Fertig-Hollandaise (klein)" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Worcester-Sauce" },
+        { m: 0, e: "n.B.", n: "Zitrone" }
+    ],
+    a: "1. Basis aufschlagen: Eigelb und Weißwein im Schlagkessel über dem Wasserbad zur Rose abziehen.<br><br>2. Stabilisieren (Wichtig): Direkt nach dem Aufschlagen eine Kelle Spargelfond unterrühren. Das gibt Geschmack und verhindert, dass die Sauce später beim ersten Fettkontakt 'abscheißt'.<br><br>3. Emulgieren: Zuerst nur tröpfchenweise, dann im dünnen Strahl die geklärte Butter unterschlagen. Durch den Fond als Puffer bindet die Butter deutlich sicherer. Zum Schluss die Kelle Fertig-Holli zur Stabilisierung unterrühren.<br><br>4. Finish: Mit Salz, Zitrone und Worcester abschmecken."
+},
+{
+    id: "holzfaellersteaks",
+    posten: "Saucier",
+    titel: "Holzfällersteaks einlegen",
+    z: [
+        { m: 4, e: "Stk.", n: "Schweinenacken" },
+        { m: 2, e: "Stk.", n: "Zwiebeln" },
+        { m: 2, e: "l", n: "Wasser" },
+        { m: 10, e: "Stk.", n: "Piment" },
+        { m: 3, e: "Stk.", n: "Lorbeerblätter" },
+        { m: 1, e: "EL", n: "Koriander" },
+        { m: 1, e: "EL", n: "Senfkörner" },
+        { m: 100, e: "ml", n: "weißer Balsamico" },
+        { m: 1, e: "Stk.", n: "Zitrone" },
+        { m: 5, e: "Stk.", n: "Knoblauchzehen" },
+        { m: 1, e: "Zweig", n: "Rosmarin" },
+        { m: 5, e: "Zweige", n: "Thymian" },
+        { m: 200, e: "gr", n: "Senf" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" }
+    ],
+    a: "1. Sud ansetzen: Die Zwiebeln kleinschneiden. Zusammen mit dem Wasser, den Gewürzen und dem Senf aufkochen und anschließend vollständig abkühlen lassen.<br><br>2. Fleisch vorbereiten: Die Enden vom Schweinenacken abschneiden. Das Fleisch im Schmetterlingsschnitt auf ca. 350 g portionieren und leicht klopfen.<br><br>3. Einlegen: Das vorbereitete Fleisch mit dem KALTEN, passierten Sud übergießen, bis alles vollständig bedeckt ist."
+},
+{
+    id: "champignonsauce",
+    posten: "Saucier",
+    titel: "Champignonsauce",
+    z: [
+        { m: 1500, e: "gr", n: "Champignons" },
+        { m: 400, e: "gr", n: "Zwiebelwürfel" },
+        { m: 60, e: "gr", n: "Knoblauchöl" },
+        { m: 4, e: "l", n: "Sahne (20%)" },
+        { m: 30, e: "gr", n: "Salz" },
+        { m: 1, e: "EL", n: "Muskat (gestrichen)" },
+        { m: 0, e: "n.B.", n: "Geschroteter Pfeffer" },
+        { m: 0, e: "n.B.", n: "Mondamin" },
+        { m: 50, e: "ml", n: "Zitronensaft" }
+    ],
+    a: "1. Pilze braten (Wichtig für die Farbe): Großen Topf maximal erhitzen. Eine große Kelle Öl zugeben. Die komplette Menge Champignons hineingeben und direkt salzen. Achtung: Die Pilze müssen wirklich braten und dürfen nicht kochen! Wenn sie safteln, wird die Sauce grau. Hitze hochhalten, bis sie Farbe bekommen.<br><br>2. Aromatisieren: Sobald die Pilze Farbe haben, Zwiebelwürfel zugeben und glasig anschwitzen. Zum Schluss das Knoblauchöl kurz unterrühren.<br><br>3. Aufgießen & Würzen: Mit den 4 Litern Sahne auffüllen. Muskat und den geschroteten Pfeffer zugeben.<br><br>4. Kochen & Legieren: Die Sauce einmal voll aufkochen lassen. Dann direkt mit angerührtem Mondamin abbinden. Die Stärke 2-3 Minuten arbeiten lassen, damit sie bindet, dann die Flamme ausschalten. Hinweis: Nur auf leicht flüssige Konsistenz binden! Die Zitrone zieht später stark nach.<br><br>5. Finish (Ohne Hitze): Flamme ausschalten. Zitronensaft in die nicht mehr kochende Sauce rühren. Kurz warten, bis die Bindung durch die Säure nachgezogen hat, dann final prüfen."
+},
+{
+    id: "chilicheese",
+    posten: "Saucier",
+    titel: "Chili Cheese Sauce",
+    z: [
+        { m: 50, e: "gr", n: "Jalas (gehackt)" },
+        { m: 100, e: "ml", n: "Jalafond" },
+        { m: 1, e: "l", n: "Sahne 20%" },
+        { m: 800, e: "gr", n: "Schmelzkäse" },
+        { m: 130, e: "ml", n: "Zitronensaft" },
+        { m: 0, e: "n.B.", n: "Stärke (Mondamin)" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "geschroteter schwarzer Pfeffer" }
+    ],
+    a: "1. Basis aufkochen: Sahne, Jalapeñosfond und die gehackten Jalapeños in einen Topf geben und einmal aufkochen.<br><br>2. Schmelzen: Den Schmelzkäse unter ständigem Rühren in der heißen Flüssigkeit auflösen.<br><br>3. Temperatur senken (Wichtig!): Die Flamme vollständig ausschalten. Die Sauce darf nicht mehr sprudelnd kochen.<br><br>4. Säuerung & Vorbindung: Den Zitronensaft langsam unter in die nicht mehr kochende Sauce einrühren. Die Säure sorgt dafür, dass die Sauce bereits leicht andickt, ohne dass die Sahne ausflockt.<br><br>5. Legieren / Binden: Falls die Konsistenz noch nicht stabil genug ist, die Sauce mit etwas angerührter Stärke auf die gewünschte Viskosität binden. Hier wirklich sehr dezent angehen, da die in der Sahne enthaltenen Stabilisatoren direkt aktiviert werden.<br><br>6. Abschmecken: Final mit Salz und geschrotetem schwarzen Pfeffer abschmecken."
+},
+{
+    id: "chilidip",
+    posten: "Saucier",
+    titel: "Chilidip",
+    z: [
+        { m: 2, e: "Stk", n: "Paprika (gewürfelt)" },
+        { m: 0.5, e: "Stk", n: "weiße Zwiebel (gewürfelt)" },
+        { m: 1, e: "EL", n: "Knoblauchöl" },
+        { m: 2, e: "EL", n: "Paprika scharf" },
+        { m: 40, e: "gr", n: "Sambal Oelek" },
+        { m: 120, e: "gr", n: "Tomatenmark" },
+        { m: 1, e: "l", n: "Brühe" },
+        { m: 1500, e: "gr", n: "Ketchup" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "weißer Pfeffer" }
+    ],
+    a: "1. Sautieren: Zwiebel- und Paprikawürfel in neutralem Fett farblos anschwitzen (sautieren), bis sie glasig sind.<br><br>2. Gewürze aktivieren (Aromatisieren): Das Sambal Oelek und das scharfe Paprikapulver zugeben. Kurz mitschwenken, damit die Hitze die ätherischen Öle löst.<br><br>3. Tomatieren: Das Tomatenmark mit dem Knoblauch unterrühren und mitrösten (tomatieren). Dabei darauf achten, dass es am Boden leicht ansetzt, um Süße zu entwickeln, aber nicht schwarz wird.<br><br>4. Auffüllen & Reduzieren: Mit der Brühe ablöschen. Den Ketchup unterrühren. Die Sauce bei kleiner Hitze simmern lassen und reduzieren, bis die Bindung stimmt."
+},
+{
+    id: "currysauce",
+    posten: "Saucier",
+    titel: "Currysauce",
+    z: [
+        { m: 4, e: "Stk", n: "Gewürzgurken" },
+        { m: 1, e: "Hand", n: "Zwiebelwürfel" },
+        { m: 210, e: "gr", n: "Tomatenmark" },
+        { m: 12, e: "EL", n: "Curry" },
+        { m: 6, e: "EL", n: "Honig" },
+        { m: 3, e: "EL", n: "Sambal Oelek" },
+        { m: 50, e: "ml", n: "Apfelessig" },
+        { m: 1, e: "Dose", n: "passierte Tomaten" },
+        { m: 0.25, e: "Dose", n: "Wasser" },
+        { m: 1500, e: "gr", n: "Ketchup" },
+        { m: 0, e: "n.B.", n: "Salz & weißer Pfeffer" }
+    ],
+    a: "1. Ansatz & Röstung: Zwiebelwürfel mit wenig Öl in den Topf geben und erhitzen. Tomatenmark, Curry, Honig und Sambal Oelek zugeben und alles zusammen kräftig mit anrösten, bis sich ein schöner Bodensatz bildet.<br><br>2. Deglacieren: Mit dem Apfelessig ablöschen und den Bratensatz vom Boden lösen (deglacieren).<br><br>3. Auffüllen: Die passierten Tomaten und das Wasser (aus der ausgewaschenen Dose) zugeben. Die Gewürzgurken hinzufügen.<br><br>4. Kochen & Homogenisieren: Die Sauce unter Rühren aufkochen lassen. Den Ketchup unterrühren und alles mit dem Stabmixer fein und homogen pürieren.<br><br>5. Finish: Final mit Salz und weißem Pfeffer abschmecken."
+},
+{
+    id: "gruenkohl",
+    posten: "Saucier",
+    titel: "Grünkohl",
+    z: [
+        { m: 16000, e: "gr", n: "Grünkohl (TK)" },
+        { m: 500, e: "gr", n: "Gänseschmalz" },
+        { m: 2000, e: "gr", n: "Speckwürfel" },
+        { m: 1000, e: "gr", n: "Zwiebelwürfel" },
+        { m: 10, e: "Stk", n: "Knacker" },
+        { m: 1, e: "l", n: "Gemüsebrühe" },
+        { m: 500, e: "gr", n: "Haferflocken" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer weiß" },
+        { m: 0, e: "n.B.", n: "Senf" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "1. Dämpfen & Tauwasser sichern: Den gefrorenen Grünkohl in gelochte GN-Behälter füllen. Wichtig: Unbedingt ein geschlossenes Auffangblech ganz unten einschieben. Im Dampfmodus bei 100°C dämpfen. Das Schmelzwasser im Blech als Geschmacksbasis behalten.<br><br>2. Basis & Speck: In einem großen Topf das Schmalz auslassen. Die 2 kg Speckwürfel darin anbraten (Temperatur kontrollieren, nicht zu scharf). Sobald der Speck leicht Farbe bekommt, die Zwiebelwürfel zugeben und glasig schwitzen.<br><br>3. Zusammenführen & Würzen: Den gedämpften Grünkohl und das komplette Auffangwasser aus dem Blech in den Topf geben. Mit der Gemüsebrühe auffüllen. Jetzt die Knacker und die Grundwürze (Salz, Pfeffer, Senf und Zucker) zugeben. Alles gut unterrühren. Hinweis: Durch das spätere Zugeben der Knacker wird das Pökelsalz keiner hohen Hitze ausgesetzt. (Krebserregend)<br><br>4. Schmoren & Binden: Alles zusammen ca. 1,5 Stunden bei mäßiger Hitze schmoren lassen. Danach die Haferflocken unterrühren und kurz mitköcheln lassen, bis die Bindung steht.<br><br>5. Finaler Check: Nochmals abschmecken. Vorsicht mit zusätzlichem Salz, da Speck und Knacker während des Schmorens Salz abgeben."
+},
+{
+    id: "rindergulasch",
+    posten: "Saucier",
+    titel: "Rindergulasch",
+    z: [
+        { m: 1, e: "Teil", n: "Rindfleisch (große Würfel)" },
+        { m: 1.5, e: "Teile", n: "Zwiebeln (feine Streifen)" },
+        { m: 1, e: "Fl.", n: "Rotwein" },
+        { m: 5, e: "Stk", n: "Lorbeerblätter" },
+        { m: 10, e: "Stk", n: "Pimentbeeren" },
+        { m: 3, e: "EL/kg", n: "Tomatenmark" },
+        { m: 0, e: "n.B.", n: "Paprika (in Quadrate geschnitten)" },
+        { m: 0, e: "n.B.", n: "Gulasch-Mix" },
+        { m: 0, e: "n.B.", n: "Knoblauchöl" },
+        { m: 0, e: "n.B.", n: "Fond oder Wasser" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "Anbraten: Topf erhitzen, bis er glüht. Fleisch portionsweise mit wenig Öl scharf anbraten (nicht kochen lassen! Fleisch wird sauer und riecht nach Urin. Ammoniak!). Mit Gulasch-Mix (n.B.) würzen und im Einsatz beiseite stellen.<br><br>Zwiebelansatz: Zwiebeln zugeben und den Topf sofort ausstellen. Die Restwärme nutzen, um den Bratensatz vom Boden zu lösen.<br><br>Saucenansatz: Tomatenmark und Gewürze zugeben. Mind. 3x deglacieren (Wein/Wasser), bis der Ansatz tiefdunkel ist. Knoblauchöl (n.B.), Lorbeer und Piment zugeben.<br><br>Garen: Mit Fond/Wasser auffüllen. Zucker, Zitronensaft und geschroteten Pfeffer (n.B.) zugeben, aufkochen. Fleisch einlegen (knapp bedeckt) und simmern, bis es zart ist."
+},
+{
+    id: "sauerbratenmarinade",
+    posten: "Saucier",
+    titel: "Sauerbratenmarinade",
+    z: [
+        { m: 2, e: "l", n: "Rotwein" },
+        { m: 2, e: "l", n: "Essig" },
+        { m: 2, e: "l", n: "Wasser" },
+        { m: 0, e: "n.B.", n: "Mirepoix" },
+        { m: 0, e: "n.B.", n: "Lorbeer" },
+        { m: 0, e: "n.B.", n: "Piment" },
+        { m: 0, e: "n.B.", n: "Pfefferkörner" }
+    ],
+    a: "1. Basis ansetzen: Das Mirepoix zusammen mit dem Rotwein, Essig und Wasser in einen großen Topf geben.<br><br>2. Gewürze hinzufügen: Lorbeer, Piment und Pfefferkörner dazugeben.<br><br>3. Aufkochen: Die gesamte Marinade einmal kräftig aufkochen lassen.<br><br>4. Abkühlen & Verwenden: Die Marinade nicht passieren, sondern so wie sie ist abkühlen lassen. Sobald sie lauwarm ist, mitsamt dem Gemüse und den Gewürzen über das Fleisch gießen."
+},
+{
+    id: "spareribsmarinade",
+    posten: "Saucier",
+    titel: "Spareribs - Marinade",
+    z: [
+        { m: 1, e: "Stk", n: "weiße Zwiebel" },
+        { m: 250, e: "gr", n: "Honig" },
+        { m: 5, e: "EL", n: "Spareribsmix" },
+        { m: 2, e: "Zweige", n: "Rosmarin" },
+        { m: 100, e: "gr", n: "Senfkörner" },
+        { m: 4, e: "cl", n: "Whiskey" },
+        { m: 1250, e: "ml", n: "Cola" },
+        { m: 3000, e: "gr", n: "Ketchup" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "schwarzer Pfeffer" }
+    ],
+    a: "1. Karamellisieren: Zwiebeln in feine Würfel schneiden und zusammen mit dem Honig in den Topf geben. Beides zusammen unter Rühren goldbraun karamellisieren lassen.<br><br>2. Röstaromen: Spareribsmix, Senfkörner und Rosmarin zugeben und weiter mitrösten, bis der Ansatz eine stark dunkle Farbe hat.<br><br>3. Ablöschen & Reduzieren: Mit Whiskey ablöschen (Alkohol verkochen lassen). Mit Cola auffüllen und ca. 20 Minuten kochen lassen, bis die Cola deutlich einreduziert ist.<br><br>4. Passieren & Finish: Den heißen Sud durch ein feines Sieb direkt auf das Ketchup passieren. Alles glatt rühren und mit Salz und schwarzem Pfeffer final abschmecken."
+},
+{
+    id: "muschelsud",
+    posten: "Saucier",
+    titel: "Muschelsud Basis",
+    z: [
+        { m: 200, e: "ml", n: "Weißwein" },
+        { m: 2, e: "l", n: "Wasser" },
+        { m: 2, e: "Stk", n: "Nelken" },
+        { m: 5, e: "Stk", n: "Piment" },
+        { m: 3, e: "Stk", n: "Lorbeer" },
+        { m: 0, e: "n.B.", n: "Wurzelgemüse" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" }
+    ],
+    a: "1. Vorbereitung: Bevorzugt Schalen vom Wurzelgemüse verwenden. Falls keine Schalen vorhanden sind, das Gemüse in grobe Würfel schneiden.<br><br>2. Aufkochen: Das Wasser, den Weißwein, das Wurzelgemüse und die Gewürze (Nelken, Piment, Lorbeer) in einen Topf geben und alles einmal voll aufkochen lassen.<br><br>3. Simmern: Die Hitze reduzieren und den Sud für 20 Minuten simmern (leicht köcheln) lassen. Mit Salz und Pfeffer kräftig abschmecken.<br><br>4. Ziehen lassen & Passieren: Den Topf vom Herd nehmen und den Sud für 30 Minuten beiseite stellen, damit die Aromen voll extrahiert werden. Erst danach durch ein feines Sieb passieren."
+},
+{
+    id: "creme_brulee",
+    posten: "Pâtissier",
+    titel: "Crème Brûlée",
+    z: [
+        { m: 1000, e: "gr", n: "Sahne (30%)" },
+        { m: 90, e: "gr", n: "Raffinade Zucker" },
+        { m: 90, e: "gr", n: "Vanillezucker" },
+        { m: 15, e: "Stk.", n: "Eigelb" },
+        { m: 1, e: "Stk.", n: "Vanilleschote" },
+        { m: 1, e: "Stk.", n: "Orange (Schale)" },
+        { m: 0, e: "n.B.", n: "Muskat" },
+        { m: 0, e: "n.B.", n: "Salz" }
+    ],
+    a: "1. Infusion & Kochen: Sahne, Zucker, Orangenschale, Muskat, Salz sowie Mark und Schote der Vanille aufkochen. Kurz abkühlen lassen und durch ein Haarsieb in einen Messbecher passieren. Schote abwaschen und für neuen Vanillezucker nutzen.<br><br>2. Legieren & Entschäumen: Eigelbe im großen Messbecher vorlegen. Warme Sahne mit einem feinen Schneebesen hurtig unterrühren, um Stocken zu vermeiden. Schaum mit dem Bunsenbrenner vorsichtig wegbrennen.<br><br>3. Garen im iCombi Pro: Schälchen in 1/1 GN (4 cm hoch) füllen und final abflämmen. Im Ofen (mittlere Ebene) eine Fingerbreite Wasser angießen. Bei Hitze 96°C/100% Feuchtigkeit für 45 Min. garen.<br><br>4. Finish & Kontrolle: Tür sachte schließen (Schwappgefahr!). Nach Ablauf durch Ruckeln prüfen: Die Creme muss gestockt sein. Wassereintritt ruiniert die Creme. Falls nur zu weich, 5 Min. nachstellen."
+},
+{
+    id: "nougat_creme_brulee",
+    posten: "Pâtissier",
+    titel: "Nougat Crème Brûlée",
+    z: [
+        { m: 1000, e: "gr", n: "Sahne (30% Fett)" },
+        { m: 300, e: "gr", n: "Nougat" },
+        { m: 13, e: "Stk.", n: "Eigelb" }
+    ],
+    a: "1. Basis herstellen: Sahne und Nougat unter gelegentlichem Rühren erwärmen, bis der Nougat vollständig aufgelöst ist.<br><br>2. Legieren: Die Sahne-Nougat-Mischung auf circa 50 Grad abkühlen lassen. Das Eigelb auffangen und die warme Mischung unter ständigem Rühren langsam zum Eigelb geben.<br><br>3. Ruhen & Abfüllen: Die fertige Masse kurz ruhen lassen, damit Luftbläschen aufsteigen können. Anschließend in Förmchen füllen.<br><br>4. Backen: Im Ofen bei trockener Hitze bei 94 Grad für eine Stunde und fünf Minuten backen."
+},
+{
+    id: "souffle",
+    posten: "Pâtissier",
+    titel: "Soufflé",
+    z: [
+        { m: 10, e: "Stk.", n: "Eier" },
+        { m: 300, e: "gr", n: "Kuvertüre" },
+        { m: 100, e: "gr", n: "Mehl" },
+        { m: 240, e: "gr", n: "Zucker" },
+        { m: 0, e: "n.B.", n: "weiche Butter (für die Tassen)" }
+    ],
+    a: "1. Eier trennen & Basis herstellen: Die Eier trennen. Eigelb und Zucker schaumig schlagen. Anschließend weiche Butter zugeben und unterrühren.<br><br>2. Schokolade & Mehl: Die Kuvertüre schmelzen, zur Eigelbmasse geben und gleichmäßig vermengen. Danach das Mehl unterrühren, bis die Masse glatt ist.<br><br>3. Eischnee unterheben: Das Eiweiß steif schlagen und vorsichtig unter die Schokoladenmasse heben.<br><br>4. Vorbereiten & Abfüllen: Tassen großzügig mit Butter einfetten. Die Masse bis zur Hälfte in die Tassen füllen und diese mit Klarsichtfolie abdecken.<br><br>5. Backen: Den Ofen vorheizen. Die Soufflés bei 200 Grad Hitze für 8 Minuten backen."
+},
+{
+    id: "zimtaepfel",
+    posten: "Pâtissier",
+    titel: "Zimtäpfel",
+    z: [
+        { m: 0, e: "n.B.", n: "Äpfel (in 1/6 Stücke)" },
+        { m: 0, e: "n.B.", n: "Zimt-Zucker-Mischung" },
+        { m: 0, e: "n.B.", n: "Apfelsaft" }
+    ],
+    a: "1. Vorbereiten: Die Apfelstücke (1/6) in einen Einsatz legen.<br><br>2. Würzen: Großzügig mit der Zimt-Zucker-Mischung bestreuen.<br><br>3. Angießen: Die Äpfel vollständig mit Apfelsaft bedecken.<br><br>4. Garen: Bei 160°C Hitze für 8 Minuten abschieben."
+},
+{
+    id: "apfel_balsamico_dressing",
+    posten: "Garde Manger",
+    titel: "Apfel Balsamico Dressing",
+    z: [
+        { m: 500, e: "ml", n: "dunkler Balsamico" },
+        { m: 1400, e: "gr", n: "Apfelmus" },
+        { m: 3000, e: "ml", n: "Öl (neutral)" },
+        { m: 100, e: "gr", n: "Senf" },
+        { m: 250, e: "gr", n: "Honig" },
+        { m: 0, e: "n.B.", n: "Salz" }
+    ],
+    a: "1. Basis pürieren: Den dunklen Balsamico, Senf, Honig und Salz in ein Gefäß geben und fein pürieren.<br><br>2. Emulgieren: Anschließend das Öl (3 L) langsam unter ständigem Rühren hinzugeben, um die Vinaigrette zu emulgieren.<br><br>3. Finish: Das Apfelmus (1,4 l) unter die Emulsion mischen und das Dressing nochmals final abschmecken."
+},
+{
+    id: "basilikum_pesto",
+    posten: "Garde Manger",
+    titel: "Basilikum Pesto",
+    z: [
+        { m: 5, e: "Pck.", n: "Basilikum" },
+        { m: 1, e: "Pck.", n: "Mandeln" },
+        { m: 0, e: "n.B.", n: "Rapsöl (Öl)" },
+        { m: 1, e: "Hand", n: "Grana Padano" },
+        { m: 5, e: "Zehen", n: "Knoblauch" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Zucker" },
+        { m: 0, e: "n.B.", n: "weißer Pfeffer" }
+    ],
+    a: "1. Vorbereitung: Das Basilikum gründlich waschen und zupfen. Die Blätter in einen großen Messbecher geben.<br><br>2. Mandeln rösten: Die Mandeln mit ein paar Tropfen Öl in einer großen Pfanne anrösten. Sobald sie eine hellbraune Farbe haben, direkt zu den Basilikumblättern in den Messbecher füllen.<br><br>3. Anpürieren: Die restlichen Zutaten (Grana Padano, Knoblauch, Salz, weißer Pfeffer, Zucker) ebenfalls in den Messbecher geben. Mit Öl bis zur Hälfte des Inhalts auffüllen und mit dem Stabmixer auf höchster Stufe anpürieren.<br><br>4. Fertigstellung: Ggf. mit dem restlichen Öl bedecken und zu Ende pürieren, bis die gewünschte Konsistenz erreicht ist. Das fertige Pesto in gewaschene Weckgläser umfüllen."
+},
+{
+    id: "bbq_dip",
+    posten: "Garde Manger",
+    titel: "BBQ Dip",
+    z: [
+        { m: 1000, e: "ml", n: "Cola" },
+        { m: 1500, e: "gr", n: "Ketchup" },
+        { m: 4, e: "cl", n: "Whiskey" },
+        { m: 1, e: "Zweig", n: "Rosmarin" },
+        { m: 30, e: "gr", n: "Flüssigrauch" },
+        { m: 20, e: "gr", n: "Rauchsalz" },
+        { m: 0, e: "n.B.", n: "Knoblauchöl" },
+        { m: 0, e: "n.B.", n: "Salz" }
+    ],
+    a: "1. Reduktion: Cola mit Whiskey, Rosmarin, Rauchsalz und Flüssigrauch in einen Topf geben. Das Knoblauchöl ebenfalls direkt in diesem Schritt hinzufügen. Die Mischung reduzieren, bis sie eine sirupartige Konsistenz erreicht.<br><br>2. Passieren: Die sirupartige Masse durch ein Sieb streichen, um den Rosmarin zu entfernen.<br><br>3. Fertigstellung: Die Reduktion zum Ketchup geben und gut unterrühren.<br><br>4. Finish: Den Dip final mit Salz abschmecken."
+},
+{
+    id: "bruschetta",
+    posten: "Garde Manger",
+    titel: "Bruschetta",
+    z: [
+        { m: 1500, e: "gr", n: "Tomaten" },
+        { m: 230, e: "gr", n: "Weiße Zwiebeln" },
+        { m: 2, e: "EL", n: "Pesto" },
+        { m: 1, e: "Kelle", n: "Rapsöl" },
+        { m: 0, e: "n.B.", n: "Knoblauchöl" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "1. Vorbereitung der Tomaten: Die Tomaten waschen und den Strunk entfernen.<br><br>2. Schneidetechnik: Tomaten: In gleichmäßige, 1 cm dicke Würfel schneiden. Zwiebeln: In feine Würfel schneiden.<br><br>3. Mischen & Würzen: Die Tomaten- und Zwiebelwürfel in eine Schüssel geben. Mit Salz, Pfeffer und Zucker abschmecken. Das Pesto (2 EL), das Rapsöl (1 Kelle) sowie das Knoblauchöl hinzufügen.<br><br>4. Finish: Alles vorsichtig vermengen und kurz ziehen lassen."
+},
+{
+    id: "burgersauce",
+    posten: "Garde Manger",
+    titel: "Burgersauce",
+    z: [
+        { m: 650, e: "gr", n: "Mayonnaise" },
+        { m: 1, e: "EL", n: "Tabasco" },
+        { m: 4, e: "EL", n: "Worcestershire Sauce" },
+        { m: 0, e: "Stk.", n: "Weiße Zwiebel (1/4 Stk.)" },
+        { m: 0, e: "Stk.", n: "Gewürzgurke (1,5 Stk.)" },
+        { m: 350, e: "gr", n: "Ketchup" },
+        { m: 200, e: "ml", n: "Milch 3,5%" },
+        { m: 25, e: "ml", n: "Heller Balsamicoessig" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "1. Vorbereitung: Die weiße Zwiebel und die Gewürzgurken in grobe Stücke schneiden, damit der Stabmixer sie besser greifen kann.<br><br>2. Mixen & Pürieren: Sämtliche Zutaten - also die Mayonnaise, den Ketchup, die Milch, den Essig, die Saucen sowie die Zwiebel- und Gurkenstücke - zusammen in einen ausreichend großen Messbecher oder Topf geben.<br><br>3. Homogenisieren: Alles mit dem Stabmixer auf höchster Stufe fein und homogen pürieren, bis keine Stückchen mehr vorhanden sind und eine glatte Creme entsteht.<br><br>4. Finish: Das Dressing final mit Salz, Pfeffer und Zucker abschmecken."
+},
+{
+    id: "hausfrauensauce",
+    posten: "Garde Manger",
+    titel: "Hausfrauensauce",
+    z: [
+        { m: 1000, e: "ml", n: "Sahne (30%)" },
+        { m: 0, e: "EL", n: "Meerrettich (1,5 EL)" },
+        { m: 180, e: "ml", n: "Zitronensaft" },
+        { m: 400, e: "gr", n: "Mayonnaise" },
+        { m: 400, e: "gr", n: "Weiße Zwiebeln" },
+        { m: 300, e: "gr", n: "Gewürzgurke" },
+        { m: 300, e: "gr", n: "Apfel" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "1. Vorbereitung Einlage: Äpfel vierteln und in feine Scheiben schneiden. Sofort mit dem Zitronensaft übergießen, um Oxidation zu vermeiden. Zwiebeln in feine Streifen schneiden. Gewürzgurken längs halbieren und in feine Scheiben schneiden.<br><br>2. Saucen-Basis: In einer großen Schale die Sahne, die Mayonnaise und den Meerrettich zu einer homogenen Masse glatt rühren.<br><br>3. Vermengen: Die vorbereiteten Apfelscheiben (inkl. Zitronensaft), die Zwiebelstreifen und die Gurkenscheiben zur Saucen-Basis geben und alles vorsichtig unterheben.<br><br>4. Abschmecken: Mit Salz, Pfeffer und Zucker kräftig abschmecken. Direkt kalt stellen."
+},
+{
+    id: "caesar_dressing",
+    posten: "Garde Manger",
+    titel: "Caesar Dressing",
+    z: [
+        { m: 750, e: "gr", n: "Mayonnaise" },
+        { m: 500, e: "ml", n: "Milch" },
+        { m: 10, e: "Stk.", n: "Sardellen" },
+        { m: 50, e: "gr", n: "Kapern" },
+        { m: 5, e: "Stk.", n: "Knoblauchzehen" },
+        { m: 50, e: "ml", n: "Worcestershire Sauce" },
+        { m: 130, e: "gr", n: "Grana Padano" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Grober Pfeffer" }
+    ],
+    a: "1. Aromatisieren: Den Knoblauch im Ganzen in etwas Öl goldgelb anrösten, um die bittere Schärfe zu nehmen und ein röstiges Aroma zu erzeugen.<br><br>2. Mixur: Den gerösteten Knoblauch zusammen mit Sardellenfilets, Kapern, Milch, fein geriebenem Grana Padano und einem Spritzer Worcestershire Sauce in einen Messbecher geben.<br><br>3. Emulgieren: Die Mayonnaise in die Basis geben, alles mit einem Stabmixer vermischen (homogenisieren), bis eine glatte, cremige Konsistenz erreicht ist.<br><br>4. Abschmecken: Final mit Salz, Pfeffer und ggf. einem Spritzer Zitronensaft für die nötige Frische abrunden."
+},
+{
+    id: "coleslaw",
+    posten: "Garde Manger",
+    titel: "Coleslaw",
+    z: [
+        { m: 2, e: "Köpfe", n: "Weißkohl" },
+        { m: 2, e: "Stk.", n: "Karotten" },
+        { m: 250, e: "ml", n: "Sahne (30%)" },
+        { m: 0, e: "n.B.", n: "Mayonnaise" },
+        { m: 0, e: "n.B.", n: "Zitronensaft" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" }
+    ],
+    a: "1. Schneiden: Den Kohl halbieren und dann sechsteln. Den Strunk herausschneiden und den Kohl mit der Maschine in Streifen schneiden.<br><br>2. Salzen & Ruhen: Den geschnittenen Kohl in einen tiefen 1/1 GN-Behälter geben, mit Salz vermengen und 15 Minuten stehen lassen.<br><br>3. Kneten: Nach der Ruhezeit den Kohl kräftig kneten, bis er weich ist und die Zellstruktur aufgebrochen ist.<br><br>4. Anmachen: Mayonnaise, Zitronensaft, Sahne, Salz und Pfeffer hinzufügen. Alles gründlich vermengen, bis der Geschmack stimmt und die Konsistenz schön cremig ist.<br><br>5. Karotten zugeben: Erst ganz zum Schluss die geriebenen Karotten unterheben und den Salat fertigstellen."
+},
+{
+    id: "guacamole",
+    posten: "Garde Manger",
+    titel: "Guacamole",
+    z: [
+        { m: 1000, e: "gr", n: "Avocado-(Pulp)" },
+        { m: 200, e: "gr", n: "Tomaten" },
+        { m: 30, e: "ml", n: "Limettensaft (Limejuice)" },
+        { m: 10, e: "Löffel", n: "Vitamin C Pulver" },
+        { m: 2, e: "Stk.", n: "entkernte Chilis" },
+        { m: 0, e: "n.B.", n: "Salz" },
+        { m: 0, e: "n.B.", n: "Pfeffer" },
+        { m: 0, e: "n.B.", n: "Zucker" }
+    ],
+    a: "1. Tomaten-Concassee: Die Tomaten kreuzförmig einschneiden. In kochendem Salzwasser blanchieren und sofort in Eiswasser abschrecken. Die Haut abziehen, vierteln, Kerngehäuse entfernen und das Fruchtfleisch in feine Würfel schneiden.<br><br>2. Basis anrühren: Den Limettensaft in einer Schüssel mit dem Vitamin C Pulver vermengen.<br><br>3. Chili vorbereiten: Die zwei Chilischoten entkernen und in ganz feine Streifen bzw. Würfel schneiden.<br><br>4. Vermengen: Avocado-Fruchtfleisch, Tomatenwürfel und Chilis zur Limetten-Mischung geben. Alles mit einem feinen Schneebesen homogen vermengen.<br><br>5. Finish & Lagerung: Mit Salz, Pfeffer und Zucker abschmecken. In GN-Einsätze abfüllen und die Frischhaltefolie direkt auf die Guacamole auflegen (Hautbildung verhindern)."
+},
+{
+    id: "gurkensalat",
+    posten: "Garde Manger",
+    titel: "Gurkensalat",
+    z: [
+        { m: 5500, e: "gr", n: "Gurken" },
+        { m: 30, e: "gr", n: "Salz" },
+        { m: 2, e: "gr", n: "Weißer Pfeffer" },
+        
+        { m: 100, e: "gr", n: "Zucker" },
+        { m: 150, e: "ml", n: "Balsamico hell" },
+        { m: 10, e: "gr", n: "Dill" },
+        { m: 1, e: "Kelle", n: "Öl (neutral)" }
+    ],
+    a: "1. Schneiden & Auswässern: Die Gurken waschen und in feine Scheiben hobeln. Auf ein Siebblech geben, mit Salz und Zucker bestreuen. Ca. 30 Minuten auswässern lassen.<br><br>2. Dressing vorbereiten: In einer Schüssel Balsamico, Öl und weißen Pfeffer mischen. Den fein gehackten Dill dazugeben.<br><br>3. Zusammenführen: Die entwässerten Gurkenscheiben leicht ausdrücken und zum Dressing geben. Alles gründlich vermengen.<br><br>4. Finaler Check: Nochmals abschmecken. Die Gurken haben durch das Auswässern bereits eine Grundwürze, meist muss nur noch wenig nachjustiert werden."
+},
+
+    {
+        "id": "himbeervinaigrette",
+        "posten": "Garde Manger",
+        "titel": "Himbeervinaigrette",
+        "z": [
+            { "m": 600, "e": "g", "n": "Himbeeren" },
+            { "m": 6, "e": "Stk.", "n": "Schalotten" },
+            { "m": 100, "e": "ml", "n": "Heller Balsamico Essig" },
+            { "m": 120, "e": "g", "n": "Senf" },
+            { "m": 300, "e": "ml", "n": "Rapsöl" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Himbeersirup" },
+            { "m": 0, "e": "n.B.", "n": "Zucker" }
+        ],
+        "a": "1. Vorbereitung: Die 600 g Himbeeren in der Mikrowelle auftauen.<br><br>2. Schalotten: Die Schalotten fein schneiden und in einer Pfanne mit Zucker karamellisieren, bis sie weich sind.<br><br>3. Basis herstellen: Die aufgetauten Himbeeren mit den karamellisierten Schalotten, dem hellen Balsamico Essig (100 ml) und dem Senf (120 g) vermengen.<br><br>4. Emulgieren: Das Rapsöl (300 ml) unter Rühren hinzufügen, um die Vinaigrette zu binden.<br><br>5. Abschmecken: Mit Salz, Pfeffer und Himbeersirup final abschmecken und verfeinern."
+    },
+    {
+        "id": "kalte_gurkensuppe",
+        "posten": "Garde Manger",
+        "titel": "Kalte Gurkensuppe",
+        "z": [
+            { "m": 1.5, "e": "Stk.", "n": "Gurken" },
+            { "m": 2, "e": "EL", "n": "Crème fraîche" },
+            { "m": 0, "e": "n.B.", "n": "Dill" },
+            { "m": 0, "e": "n.B.", "n": "weißer Balsamico-Essig" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Zucker" }
+        ],
+        "a": "1. Pürieren: Alle Zutaten zusammen in ein Gefäß geben und fein pürieren.<br><br>2. Passieren: Die pürierte Masse anschließend durch ein Sieb streichen, um eine feine Konsistenz zu erhalten."
+    },
+    {
+        "id": "lauwarme_vinaigrette",
+        "posten": "Garde Manger",
+        "titel": "Lauwarme Vinaigrette",
+        "z": [
+            { "m": 2, "e": "l", "n": "Balsamico Essig hell" },
+            { "m": 6, "e": "l", "n": "Öl (neutral)" },
+            { "m": 800, "e": "g", "n": "Weiße Zwiebeln" },
+            { "m": 320, "e": "g", "n": "Senf" },
+            { "m": 120, "e": "g", "n": "Salz" },
+            { "m": 280, "e": "g", "n": "Zucker" },
+            { "m": 40, "e": "g", "n": "Knoblauch" }
+        ],
+        "a": "1. Dämpfen der Zwiebeln: Die weißen Zwiebeln grob runterschneiden und in ein Siebblech geben. Im Kombidämpfer für 20 Minuten dämpfen.<br><br>2. Basis & Pürieren: Die gedämpften Zwiebeln zusammen mit dem hellen Balsamico Essig, dem Knoblauch, Senf, Salz und Zucker in ein ausreichend großes Gefäß geben und fein pürieren.<br><br>3. Emulgieren: Das Öl langsam unter ständigem Rühren (am besten mit dem Stabmixer) in die Mischung einlaufen lassen, bis eine homogene und stabile Emulsion entsteht. Bei dieser Menge ggf. in zwei Chargen arbeiten oder einen großen Rührkessel verwenden."
+    },
+    {
+        "id": "remoulade",
+        "posten": "Garde Manger",
+        "titel": "Remoulade",
+        "z": [
+            { "m": 800, "e": "g", "n": "Mayonnaise" },
+            { "m": 1, "e": "Stk.", "n": "Gewürzgurke" },
+            { "m": 0.5, "e": "Stk.", "n": "weiße Zwiebel" },
+            { "m": 2, "e": "Stk.", "n": "gekochte Eier" },
+            { "m": 50, "e": "ml", "n": "Gurkenfond" },
+            { "m": 1, "e": "Hand", "n": "Petersilie" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Zucker" }
+        ],
+        "a": "1. Vorbereitung: Die weiße Zwiebel und die Gewürzgurke in kleine Stücke schneiden.<br><br>2. Pürieren: Die geschnittenen Zwiebeln und Gurken zusammen mit allen restlichen Zutaten - außer der Mayonnaise - in einen Messbecher geben und pürieren.<br><br>3. Vermengen & Abschmecken: Die pürierte Masse anschließend mit der Mayonnaise vermengen und final abschmecken."
+    },
+    {
+        "id": "salsa",
+        "posten": "Garde Manger",
+        "titel": "Salsa",
+        "z": [
+            { "m": 1600, "e": "g", "n": "Tomaten" },
+            { "m": 350, "e": "g", "n": "weiße Zwiebel" },
+            { "m": 300, "e": "g", "n": "Salatgurke" },
+            { "m": 200, "e": "g", "n": "Jalapeños" },
+            { "m": 200, "e": "ml", "n": "Öl" },
+            { "m": 40, "e": "g", "n": "gerösteter Knoblauch" },
+            { "m": 4, "e": "Stk.", "n": "Limetten" },
+            { "m": 30, "e": "g", "n": "Koriander (frisch)" },
+            { "m": 30, "e": "g", "n": "Salz" },
+            { "m": 30, "e": "g", "n": "Zucker" },
+            { "m": 0, "e": "n.B.", "n": "grober Pfeffer" }
+        ],
+        "a": "1. Limetten vorbereiten: Von den Limetten (4 Stk.) zuerst die Zesten abreiben. Anschließend die Limetten auspressen, um den Saft zu gewinnen.<br><br>2. Vorbereitung im Messbecher: Alle Zutaten die Zwiebeln, Salatgurke, Tomaten, Koriander, Jalapeños, Öl, den gerösteter Knoblauch sowie die Limettenzesten und den Limettensaft - zusammen mit Salz und Zucker in einen großen Messbecher geben.<br><br>3. Mixen: Die gesamte Masse grob pürieren, sodass noch deutliche Stückchen enthalten bleiben.<br><br>4. Abschmecken: Die Salsa mit grobem Pfeffer final abschmecken."
+    },
+    
+    {
+        "id": "wurstsalat",
+        "posten": "Garde Manger",
+        "titel": "Wurstsalat",
+        "z": [
+            { "m": 1, "e": "kg", "n": "Leberkäse" },
+            { "m": 400, "e": "g", "n": "Zwiebelstreifen" },
+            { "m": 400, "e": "g", "n": "Paprikastreifen" },
+            { "m": 500, "e": "g", "n": "Halbierte Gewürzgurke" },
+            { "m": 2, "e": "kleine Kellen", "n": "Heller Balsamico" },
+            { "m": 2, "e": "kleine Kellen", "n": "Rapsöl" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Zucker" }
+        ],
+        "a": "1. Schneidetechnik Fleisch: Den Leberkäse auf der Aufschnittmaschine in feine Scheiben schneiden. Die Scheiben anschließend mit einem Messer in gleichmäßige Streifen schneiden.<br><br>2. Vorbereitung Gemüse: Zwiebeln & Paprika: In feine Streifen schneiden. Gewürzgurken: Erst der Länge nach halbieren und dann in feine Scheiben schneiden.<br><br>3. Marinade & Vermengen: Den hellen Balsamico und das Rapsöl in einer Schüssel mischen. Alle geschnittenen Zutaten (Leberkäse, Zwiebeln, Paprika, Gurken) hinzugeben und gründlich vermengen.<br><br>4. Abschmecken: Den Salat mit Salz, Pfeffer und Zucker kräftig abschmecken."
+    },
+    {
+        "id": "tatarmumpe",
+        "posten": "Garde Manger",
+        "titel": "Tatarmumpe",
+        "z": [
+            { "m": 1.5, "e": "kg", "n": "Ketchup" },
+            { "m": 150, "e": "g", "n": "Senf" },
+            { "m": 75, "e": "g", "n": "Kapern" },
+            { "m": 50, "e": "ml", "n": "Cognac" }
+        ],
+        "a": "1. Vorbereitung: Ketchup, Senf, Kapern und den Cognac in einen Mixbecher geben.<br><br>2. Mixen: Alle Zutaten alles fein mixen, bis eine vollkommen glatte und homogene Konsistenz erreicht ist."
+    },
+    
+    {
+        "id": "kaese_bier_suppe",
+        "posten": "Entrementier",
+        "titel": "Käse Bier Suppe",
+        "z": [
+            { "m": 1, "e": "Stk.", "n": "Karotte" },
+            { "m": 1, "e": "Stk.", "n": "Lauch (nur das Weiße)" },
+            { "m": 0.25, "e": "Stk.", "n": "Sellerie" },
+            { "m": 0.5, "e": "l", "n": "Budweiser" },
+            { "m": 1, "e": "l", "n": "Sahne (20%)" },
+            { "m": 1, "e": "l", "n": "Gemüsebrühe" },
+            { "m": 5, "e": "Zweige", "n": "Thymian" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Muskat" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Mondamin" }
+        ],
+        "a": "1. Anschwitzen: Die Karotte, den Sellerie und das Weiße vom Lauch klein schneiden und in einem Topf anschwitzen, bis das Gemüse weich wird.<br><br>Ablöschen & Reduzieren: Das Gemüse mit dem Budweiser ablöschen und das Bier einkochen lassen (reduzieren).<br><br>2.<br><br>3. Würzen & Sahne zugeben: Die Gemüsebrühe und die Thymianzweige hinzufügen. Alles aufkochen und mit Salz, Pfeffer und Muskat kräftig würzen. Die Flamme runterdrehen und erst dann die Sahne zugeben.<br><br>4. Aufkochen & Abbinden: Die Suppe jetzt noch einmal aufkochen und mit Mondamin bis zur gewünschten Sämigkeit abbinden.<br><br>5. Mixen & Passieren: Die Thymianzweige entfernen. Die gesamte Masse fein pürieren und anschließend durch ein feines Sieb passieren."
+    },
+    {
+        "id": "erbsenpueree",
+        "posten": "Entrementier",
+        "titel": "Erbsenpüree",
+        "z": [
+            { "m": 0.5, "e": "Beutel", "n": "Erbsen" },
+            { "m": 2, "e": "Hände", "n": "Speck" },
+            { "m": 1, "e": "Stk.", "n": "Zwiebel" },
+            { "m": 0, "e": "n.B.", "n": "Eisbeinfond (Vorsicht nicht zu viel!!! Im Zweifel Gemüsefond)" },
+            { "m": 0, "e": "n.B.", "n": "Majoran" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" }
+        ],
+        "a": "1. Basis ansetzen: Den Speck in einem Topf auslassen. Die Zwiebel hinzufügen und glasig anschwitzen.<br><br>2. Garen: Den Eisbeinfond (oder Gemüsefond) und die Erbsen dazugeben und alles zum Kochen bringen.<br><br>3. Würzen & Finish: Die Mischung mit Majoran, Salz und Pfeffer würzen. Anschließend alles fein pürieren und nochmals final abschmecken."
+    },
+    {
+        "id": "gulaschsuppe",
+        "posten": "Entrementier",
+        "titel": "Gulaschsuppe",
+        "z": [
+            { "m": 4, "e": "kg", "n": "Rindfleisch" },
+            { "m": 1.5, "e": "kg", "n": "Zwiebeln (weiß)" },
+            { "m": 1, "e": "kg", "n": "Paprika" },
+            { "m": 2, "e": "kg", "n": "Kartoffeln" },
+            { "m": 1, "e": "Dose", "n": "Tomatenmark" },
+            { "m": 1, "e": "Flasche", "n": "Rotwein" },
+            { "m": 7, "e": "l", "n": "Wasser/Fond" },
+            { "m": 130, "e": "g", "n": "Paprika (edelsüß)" },
+            { "m": 50, "e": "g", "n": "Paprika (rosenscharf)" },
+            { "m": 15, "e": "Stk.", "n": "Knoblauchzehen (gerieben)" },
+            { "m": 10, "e": "Stk.", "n": "Lorbeerblätter" },
+            { "m": 25, "e": "g", "n": "Majoran" },
+            { "m": 2, "e": "EL", "n": "Hähnchengewürz" },
+            { "m": 0, "e": "n.B.", "n": "Cayennepfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Salz" }
+        ],
+        "a": "1. Mise en Place & Gewürzmischung: Fleisch, Zwiebeln, Paprika und Kartoffeln separat schneiden und in aparte Behälter füllen. Die Gewürze (Paprika edelsüß/rosenscharf, Majoran, Hähnchengewürz, Cayennepfeffer) in einer Schüssel mischen.<br><br>2. Fleisch anbraten: Topf erhitzen, bis er glüht. Das Fleisch nach und nach scharf anbraten, dabei jeweils mit etwas Gewürzmischung und Salz (n.B.) würzen. Wichtig: Beim Anbraten nicht viel Öl benutzen, um einen höheren Röstgrad zu erreichen.<br><br>3. Saucenansatz & Deglacieren: Nur die Zwiebeln anschwitzen, dann Tomatenmark und restliche Gewürze mitrösten (Verbrennungsgefahr! Am Topf bleiben). Mit Wein mind. 3x deglacieren, dann Knoblauch kurz mit anschwitzen.<br><br>4. Garen der Einlagen: Mit 7 Litern Wasser/Fond auffüllen, aufkochen. Den Fleisch, Kartoffeln und Lorbeerblätter zugeben und simmern lassen. Sobald Fleisch und Kartoffeln fast gar sind (leichter Biss), die Paprika für 5 Minuten mitsimmern.<br><br>5. Finish: Final abschmecken und abfüllen."
+    },
+    {
+        "id": "kartoffel_creme_suppe",
+        "posten": "Entrementier",
+        "titel": "Kartoffel - Creme - Suppe",
+        "z": [
+            { "m": 5, "e": "kg", "n": "Kartoffeln" },
+            { "m": 1, "e": "Stk.", "n": "Lauch (nur das Weiße)" },
+            { "m": 2, "e": "Stk.", "n": "Karotten" },
+            { "m": 0.25, "e": "Stk.", "n": "Sellerie" },
+            { "m": 3, "e": "Hände", "n": "Speck" },
+            { "m": 1, "e": "l", "n": "Sahne (20%)" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Muskat" },
+            { "m": 0, "e": "n.B.", "n": "Majoran" }
+        ],
+        "a": "1. Speck auslassen: Den Speck in einem ausreichend großen Topf auslassen, bis das Fett austritt.<br><br>2. Gemüse ansetzen: Das Mirepoix (Lauch, Karotten, Sellerie) sowie die Kartoffeln hinzugeben. Alles mit Wasser bedecken.<br><br>3. Garen: Die Suppe kochen lassen, bis das gesamte Gemüse und die Kartoffeln weich gekocht sind.<br><br>4. Mixen & Binden: Die Masse fein pürieren. Anschließend die Sahne hinzugeben und alles noch einmal kurz aufkochen lassen.<br><br>5. Finish: Die Suppe mit Salz, Pfeffer, Muskat und Majoran kräftig abschmecken und zum Schluss durch ein Sieb passieren."
+    },
+    {
+        "id": "kartoffelsalat",
+        "posten": "Entrementier",
+        "titel": "Kartoffelsalat",
+        "z": [
+            { "m": 4, "e": "kg", "n": "Kartoffeln" },
+            { "m": 3, "e": "Stk.", "n": "Salatgurken (entkernt. diagonal in halben Streifen)" },
+            { "m": 1, "e": "kg", "n": "weiße Zwiebeln" },
+            { "m": 750, "e": "ml", "n": "Rapsöl" },
+            { "m": 150, "e": "g", "n": "Senf" },
+            { "m": 200, "e": "g", "n": "Balsamico (hell)" },
+            { "m": 150, "e": "g", "n": "Zucker" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "weißer Pfeffer" }
+        ],
+        "a": "1. Vorbereitung Gemüse: Die Kartoffeln weich garen (weicher als bei Bratkartoffeln), pellen und in Scheiben schneiden. Die Gurken 3x anschälen, längs halbieren, entkernen und diagonal in halbe Streifen schneiden.<br><br>2. Zwiebeln dämpfen: Die weißen Zwiebeln grob runterschneiden, in einen GN-Einsatz geben und im Combi-Dämpfer für 20 Minuten dämpfen.<br><br>3. Marinade herstellen (Emulsion): Die gedämpften Zwiebeln zusammen mit Senf, hellem Balsamico, Zucker, Salz und weißem Pfeffer anpürieren. Danach das Rapsöl langsam hochziehen, bis eine stabile Emulsion entsteht.<br><br>4. Vermengen & Finish: Die fertige Marinade über die Kartoffeln und Gurken geben und alles vorsichtig vermischen."
+    },
+    
+    {
+        "id": "rotkohl_frisch",
+        "posten": "Entrementier",
+        "titel": "Rotkohl frisch",
+        "z": [
+            { "m": 0, "e": "n.B.", "n": "Orangen & Traubensaft" },
+            { "m": 1, "e": "Einsatz", "n": "Zwiebeln" },
+            { "m": 0, "e": "n.B.", "n": "Gänsefett" },
+            { "m": 1, "e": "Einsatz", "n": "Apfelwürfel (TK)" },
+            { "m": 1, "e": "Glas", "n": "Apfelmus" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Zucker" },
+            { "m": 1, "e": "Stk.", "n": "Gewürzkugel: Nelken, Piment, Wacholder, Lorbeer" }
+        ],
+        "a": "1. Anschwitzen: Die Zwiebeln (1 Einsatz) in Gänsefett glasig anschwitzen.<br><br>2. Fruchtkomponenten hinzufügen: Die Apfelwürfel (1 Einsatz, TK) und das Apfelmus (1 Glas) zu den Zwiebeln geben.<br><br>3. Würzen & Sud ansetzen: Die Mischung mit Salz, Pfeffer und Zucker würzen. Mit Orangen- und Traubensaft auffüllen.<br><br>4. Garen: Die Gewürzkugel (bestückt mit Nelken, Piment, Wacholder und Lorbeer) hinzugeben und den Rotkohl kochen lassen, bis er die gewünschte Konsistenz hat."
+    },
+    {
+        "id": "kraeutercreme",
+        "posten": "Entrementier",
+        "titel": "Kräutercreme",
+        "z": [
+            { "m": 5, "e": "kg", "n": "Schmand" },
+            { "m": 1, "e": "Stk.", "n": "Zitrone" },
+            { "m": 100, "e": "g", "n": "Petersilie" },
+            { "m": 50, "e": "g", "n": "Schnittlauch" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" }
+        ],
+        "a": "1. Vorbereitung: Die Petersilie (100 g) und den Schnittlauch (50 g) fein hacken. Die Zitrone (1 Stk.) auspressen.<br><br>2. Vermengen: Den Schmand (5 kg) mit den gehackten Kräutern und dem Zitronensaft gründlich verrühren.<br><br>3. Abschmecken: Die Kräutercreme mit Salz und Pfeffer final abschmecken."
+    },
+    {
+        "id": "kuerbissuppe",
+        "posten": "Entrementier",
+        "titel": "Kürbissuppe",
+        "z": [
+            { "m": 4, "e": "kg", "n": "kl. Hokkaidokürbis" },
+            { "m": 3.5, "e": "Stk.", "n": "weiße Zwiebeln (3 bis 4 Stk.)" },
+            { "m": 1, "e": "Stk.", "n": "das Weiße vom Lauch" },
+            { "m": 2, "e": "Stk.", "n": "Chilischoten" },
+            { "m": 30, "e": "g", "n": "Ingwer" },
+            { "m": 1, "e": "Stk.", "n": "Zimtstange" },
+            { "m": 5, "e": "Stk.", "n": "Lorbeerblätter" },
+            { "m": 5, "e": "Stk.", "n": "Nelken" },
+            { "m": 1, "e": "l", "n": "Sahne" },
+            { "m": 0, "e": "n.B.", "n": "Honig" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" }
+        ],
+        "a": "Kürbis backen: Kürbisse halbieren, in 1/1 GN mit Salz & Zucker (n.B.:) bei 180°C weich backen. Danach Kerne, Strunk und den harten Blütenansatz entfernen.<br><br>Basis: Zwiebeln und Lauch anschwitzen, mit Honig (n.B.:) karamellisieren. Chili kurz zugeben (Achtung: Dämpfe!). Mit etwas Wasser ablöschen.<br><br>Aromatisieren: Gewürzkugel (Ingwer, Lorbeer, Nelken) und Zimtstange in den Topf. Kürbis zugeben, mit Wasser (n.B.:) bedecken, aufkochen und 20 Min. simmern.<br><br>Finish: Gewürzkugel & Zimt entfernen. Stark pürieren, grob passieren, kurz aufkochen. Herd aus, Sahne einrühren, final abschmecken."
+    },
+    {
+        "id": "rahmpfifferlinge",
+        "posten": "Entrementier",
+        "titel": "Rahmpfifferlinge",
+        "z": [
+            { "m": 2, "e": "kg", "n": "Pfifferlinge" },
+            { "m": 800, "e": "g", "n": "Zwiebelwürfel" },
+            { "m": 500, "e": "g", "n": "Schmand" },
+            { "m": 0.5, "e": "l", "n": "Sahne" },
+            { "m": 40, "e": "g", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Knoblauchöl" }
+        ],
+        "a": "1. Pilze garen: Die Pfifferlinge in einer heißen Pfanne scharf anbraten und anschließend aus der Pfanne nehmen und beiseite stellen.<br><br>2. Saucenansatz: Die Zwiebelwürfel in der Pfanne anschwitzen. Zum Schluss einen Schuss Knoblauchöl zugeben und direkt mit der Sahne (1/2 l) auffüllen.<br><br>3. Binden & Vollenden: Den Schmand (500 g) unterrühren und die Sauce aufkochen lassen. Erst zum Schluss die bereits gebratenen Pfifferlinge wieder in die Sauce geben.<br><br>4. Abschmecken: Das Gericht mit Salz (40 g) und Pfeffer final abschmecken."
+    },
+    {
+        "id": "ratatouille",
+        "posten": "Entrementier",
+        "titel": "Ratatouille",
+        "z": [
+            { "m": 2.9, "e": "kg", "n": "Gemüse (ohne Aubergine)" },
+            { "m": 1530, "e": "g", "n": "geschälte Tomaten (1 Dose)" },
+            { "m": 200, "e": "g", "n": "Tomatenmark" },
+            { "m": 4, "e": "EL", "n": "Knoblauchöl" },
+            { "m": 50, "e": "g", "n": "Zitronensaft" },
+            { "m": 25, "e": "g", "n": "Zucker" },
+            { "m": 40, "e": "g", "n": "Salz" },
+            { "m": 20, "e": "g", "n": "Paprika (edelsüß)" },
+            { "m": 15, "e": "g", "n": "Majoran" },
+            { "m": 5, "e": "g", "n": "Thymian (frisch gehackt)" },
+            { "m": 7, "e": "g", "n": "Pfeffer weiß" }
+        ],
+        "a": "1. Mischen: Alle oben genannten Zutaten in einem geeigneten Gefäß oder direkt im GN-Behälter gründlich miteinander verrühren.<br><br>2. Garen: Die Mischung bei 155°C Hitze für 30 Minuten im Ofen garen."
+    },
+    
+    {
+        "id": "tomaten_essenz",
+        "posten": "Entrementier",
+        "titel": "Tomaten Essenz",
+        "z": [
+            { "m": 2, "e": "kg", "n": "Tomaten" },
+            { "m": 2, "e": "Bund", "n": "Basilikum" },
+            { "m": 2, "e": "Zehen", "n": "Knoblauch" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Öl (neutral)" },
+            { "m": 0, "e": "n.B.", "n": "Sternanis" }
+        ],
+        "a": "1. Pürieren: Alle Zutaten außer dem Sternanis nur kurz (!!!) pürieren.<br><br>2. Aufkochen: Die pürierte Masse zusammen mit dem Sternanis aufkochen.<br><br>3. Klären: Die Mischung in ein Passiertuch hängen, um die klare Substanz zu gewinnen.<br><br>4. Verwendung: Nur die aufgefangene klare Substanz für die weitere Verwendung nutzen."
+    },
+    {
+        "id": "rotkohl",
+        "posten": "Entrementier",
+        "titel": "Rotkohl",
+        "z": [
+            { "m": 9, "e": "kg", "n": "Rotkohl" },
+            { "m": 2, "e": "l", "n": "Rotwein (vorzugsweise Merlot)" },
+            { "m": 4, "e": "Pck.", "n": "Apfelmus" },
+            { "m": 350, "e": "g", "n": "Zucker" },
+            { "m": 1, "e": "Stange", "n": "Zimt" },
+            { "m": 2, "e": "Stk.", "n": "Nelken" },
+            { "m": 5, "e": "Stk.", "n": "Lorbeerblätter" },
+            { "m": 10, "e": "Stk.", "n": "Pimentkörner" },
+            { "m": 1, "e": "kl. Schale", "n": "Muskat" },
+            { "m": 0, "e": "n.B.", "n": "Salz Pfeffer" }
+        ],
+        "a": "1. Wein-Gewürz-Ansatz: Den Zucker (350 g) in einem Topf karamellisieren. Mit dem Rotwein (2 l) ablöschen und alle Gewürze (Zimt, Nelken, Lorbeer, Piment, Muskat) hinzugeben. Alles aufkochen und ca. 20 Minuten ziehen lassen.<br><br>2. Vorbereiten: Den geschnittenen Rotkohl (9 kg) zusammen mit dem Apfelmus (4 Pck.) in einen tiefen Einsatz geben.<br><br>3. Vermengen: Den Rotwein-Gewürz-Mix durch ein Sieb (passiert) zum Rotkohl in den Einsatz geben. Mit Salz und Pfeffer abschmecken.<br><br>4. Garen: Den Einsatz mit Deckel bei 160°C Hitze für 1 Stunde in den Ofen abschieben.<br><br>5. Finish: Nach dem Garen den Sud fast vollständig abbinden."
+    },
+    {
+        "id": "sauerkraut",
+        "posten": "Entrementier",
+        "titel": "Sauerkraut",
+        "z": [
+            { "m": 1, "e": "Dose", "n": "Sauerkraut" },
+            { "m": 1, "e": "kg", "n": "Speck" },
+            { "m": 0.166, "e": "GN", "n": "weiße Zwiebeln (feine Streifen)" },
+            { "m": 1, "e": "l", "n": "Apfelsaft" },
+            { "m": 500, "e": "ml", "n": "Wasser" },
+            { "m": 6, "e": "Stk.", "n": "Lorbeerblätter" },
+            { "m": 10, "e": "Beeren", "n": "Piment" },
+            { "m": 200, "e": "g", "n": "Zucker" },
+            { "m": 0, "e": "n.B.", "n": "Haxenmix" },
+            { "m": 0, "e": "n.B.", "n": "Stärke" }
+        ],
+        "a": "1. Basis ansetzen: Den Speck in einem Topf auslassen. Die Zwiebelstreifen hinzugeben, mit Haxenmix würzen und glasig anschwitzen.<br><br>2. Karamellisieren & Ablöschen: Den Zucker (ca. 200 g) im Topf karamellisieren lassen und anschließend mit dem Apfelsaft (1 l) ablöschen.<br><br>3. Sud kochen: 500 ml Wasser, Lorbeerblätter und Pimentbeeren hinzufügen. Alles ca. 10 Minuten kochen lassen, damit sich das Aroma der Gewürze voll entfalten kann.<br><br>4. Binden & Vollenden: Den kochenden Sud mit Stärke sirupartig abbinden. Erst dann das Sauerkraut hinzugeben, unterheben und alles zu einer homogenen Masse vermischen.<br><br>5. Finish: Das Sauerkraut final abschmecken und für die Ausgabe oder Lagerung abfüllen."
+    },
+    {
+        "id": "spargelsuppe_gregor",
+        "posten": "Entrementier",
+        "titel": "Spargelsuppe Gregor",
+        "z": [
+            { "m": 10, "e": "l", "n": "Fond" },
+            { "m": 2, "e": "Stk.", "n": "Butter" },
+            { "m": 700, "e": "g", "n": "Mehl (für die Schwitze)" },
+            { "m": 1, "e": "l", "n": "Sahne" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Pfeffer" },
+            { "m": 0, "e": "n.B.", "n": "Zucker" }
+        ],
+        "a": "1. Basis herstellen: Aus der Butter und dem Mehl (700 g) eine klassische helle Mehlschwitze zubereiten.<br><br>2. Auffüllen: Die Mehlschwitze nach und nach mit dem Fond (10 l) aufgießen und dabei ständig rühren, um Klumpen zu vermeiden. Alles gut durchkochen lassen.<br><br>3. Verfeinern: Die Sahne (1 l) hinzufügen, um der Suppe eine cremige Bindung zu geben.<br><br>4. Abschmecken: Die Spargelsuppe mit Salz, Pfeffer und einer Prise Zucker final abschmecken."
+    },
+    {
+        "id": "spargelsuppe",
+        "posten": "Entrementier",
+        "titel": "Spargelsuppe",
+        "z": [
+            { "m": 1, "e": "Stk.", "n": "Butter" },
+            { "m": 500, "e": "g", "n": "Mehl" },
+            { "m": 5, "e": "l", "n": "Spargelfond" },
+            { "m": 1, "e": "l", "n": "Sahne (20%)" },
+            { "m": 1, "e": "Prise", "n": "Zucker" },
+            { "m": 0, "e": "n.B.", "n": "Salz (evtl. nachsalzen)" }
+        ],
+        "a": "1. Mehlschwitze herstellen: Die Butter in einem großen Topf schmelzen lassen. Das Mehl hinzugeben und unter ständigem Rühren farblos anschwitzen, bis eine homogene Masse entsteht.<br><br>2. Aufgießen: Den Spargelfond nach und nach unter kräftigem Rühren mit dem Schneebesen zur Mehlschwitze geben, um Klumpenbildung zu vermeiden. Die Suppe einmal aufkochen lassen, damit das Mehl bindet.<br><br>3. Verfeinern: Die Sahne (20%) unterrühren und die Suppe bei geringer Hitze einige Minuten köcheln lassen.<br><br>4. Abschmecken: Die Suppe mit einer Prise Zucker und nach Belieben mit Salz final abschmecken."
+    },
+    {
+        "id": "spaetzle",
+        "posten": "Entrementier",
+        "titel": "Spätzle",
+        "z": [
+            { "m": 1, "e": "kg", "n": "Mehl" },
+            { "m": 13, "e": "Stk.", "n": "Eier" },
+            { "m": 0.5, "e": "kl. Kelle", "n": "Öl vor dem Schlagen" },
+            { "m": 1, "e": "kl. Kelle", "n": "Öl für die Bindung" },
+            { "m": 1, "e": "Schluck", "n": "Sprudelwasser (nach Bedarf)" },
+            { "m": 0, "e": "n.B.", "n": "Salz" },
+            { "m": 0, "e": "n.B.", "n": "Muskat (wenig!)" }
+        ],
+        "a": "1. Teig & Gluten: Eier, Salz und wenig Muskat (n.B.) homogen verrühren. Mehl per Hand einarbeiten. Sprudelwasser nur bei Bedarf zugeben (Teig muss fest sein). Mit etwas Öl kräftig schlagen, bis der Teig Blasen wirft. Mit einer Kelle Öl zur Kugel formen und mit einem Touchon warm ruhen lassen, bis er samtig wird.<br><br>2. Setup: Hohen Topf (Rand geölt) mit stark gesalzenem Wasser aufkochen. 10-l-Eimer mit Eiswasser bereitstellen. Wichtig: Spätzlepresse und Gesteck komplett in Öl tauchen (benetzen).<br><br>3. Garen: Wasser aufkochen. Flamme senken. Teig sachte drücken für lange Spätzle. Wenn sie schwimmen: 1 Min. warten, wenden, 2 Min. ziehen lassen. Danach sofort im Eiswasser abschrecken.<br><br>4. Trocknung & Finish: Spätzle im Sieb auf dem Eimer an die Zuluft stellen. Alle 5 Min. schwenken, bis sie oberflächlich trocken sind. Merke: Zu feuchtes Abfüllen verkürzt die Haltbarkeit extrem."
+    }
+
+
+
+
+
+
+        ];
+
+        let stack = ['home'];
+        let curP = "";
+
+        function render() {
+            const app = document.getElementById('app');
+            const tit = document.getElementById('titel');
+            const back = document.getElementById('back');
+            const view = stack[stack.length - 1];
+
+            window.scrollTo(0, 0);
+
+            if (view === 'home') {
+                tit.innerText = "POSTEN";
+                back.classList.add('hidden');
+                const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
+                app.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
+            } else if (view === 'list') {
+                tit.innerText = curP.toUpperCase();
+                back.classList.remove('hidden');
+                const list = rezepte.filter(r => r.posten === curP).sort((a, b) => a.titel.localeCompare(b.titel));
+                app.innerHTML = list.map(r => `<div class="list-item" onclick="openR('${r.id}')">${r.titel}</div>`).join('');
+            } else {
+                const r = rezepte.find(i => String(i.id) === String(view));
+                if (r) {
+                    tit.innerText = "REZEPT";
+                    back.classList.remove('hidden');
+                    const basisFaktor = 1;
+
+                    app.innerHTML = `
+                        <div class="detail">
+                            <h2 style="font-weight:200; font-size:2.5rem; margin:0 0 20px 0;">${r.titel}</h2>
+                            <div class="rechner-box">
+                                <span>Menge (kg/l) anpassen:</span>
+                                <input type="number" id="menge-input" value="${basisFaktor}" oninput="liveUpdate('${r.id}')">
+                            </div>
+                            <h3>Zutaten</h3>
+                            <ul id="dynamic-z-list">${renderZutaten(r, basisFaktor)}</ul>
+                            <h3>Zubereitung</h3>
+                            <p style="line-height:1.8;">${Array.isArray(r.a) ? r.a.join('<br>') : r.a}</p>
+                            <div class="hygiene"><b>WICHTIG:</b> Kühlkette einhalten und Kerntemperatur prüfen.</div>
+                        </div>`;
+                }
+            }
+        }
+
+        function renderZutaten(r, faktor) {
+            return r.z.map(i => {
+                let wertAnzeige = "";
+                if (i.m === 0 || i.m === "" || String(i.m).toLowerCase().includes("n.b")) {
+                    wertAnzeige = "n.B.";
+                } else {
+                    let wert = i.m * faktor;
+                    let saubererWert = Number.isInteger(wert) ? wert : wert.toFixed(2);
+                    let e = i.e === "g" ? "gr" : i.e;
+                    wertAnzeige = `${saubererWert} ${e}`;
+                }
+                return `<li><b>${wertAnzeige}</b> <span>${i.n}</span></li>`;
+            }).join('');
+        }
+
+        window.liveUpdate = (id) => {
+            const r = rezepte.find(i => String(i.id) === String(id));
+            const input = document.getElementById('menge-input');
+            const zList = document.getElementById('dynamic-z-list');
+            const faktor = parseFloat(input.value) || 0;
+            zList.innerHTML = renderZutaten(r, faktor);
+        };
+
+        window.openP = (p) => { curP = p; stack.push('list'); render(); };
+        window.openR = (id) => { stack.push(String(id)); render(); };
+        window.goB = () => { stack.pop(); render(); };
+        
+        // Vollbild-Modus für Capacitor aktivieren
+        async function enableFullScreen() {
+            if (window.Capacitor) {
+                const { StatusBar } = Capacitor.Plugins;
+                try {
+                    await StatusBar.hide();
+                    // Optional: Falls NavigationBar Plugin installiert ist
+                    if (Capacitor.Plugins.NavigationBar) {
+                        await Capacitor.Plugins.NavigationBar.hide();
+                    }
+                } catch (e) {
+                    console.log("StatusBar hide error", e);
+                }
+            }
+        }
+
+        // Start
+        render();
+        // Capacitor App-Plugin Listener für den Hardware-Zurück-Button
+if (window.Capacitor && Capacitor.Plugins.App) {
+    Capacitor.Plugins.App.addListener('backButton', () => {
+        if (stack.length > 1) {
+            // Wenn wir tiefer als die Startseite sind, geh einen Schritt zurück
+            goB();
+        } else {
+            // Wenn wir auf 'home' sind, schließe die App wirklich
+            Capacitor.Plugins.App.exitApp();
+        }
+    });
+}
+        enableFullScreen();
+    </script>
+</body>
+</html>
