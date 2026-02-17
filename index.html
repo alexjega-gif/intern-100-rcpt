@@ -1124,14 +1124,18 @@ if (sessionStorage.getItem("access") !== "true") {
                         <div class="detail">
                             <h2 style="font-weight:200; font-size:2.5rem; margin:0 0 20px 0;">${r.titel}</h2>
                             <div class="rechner-box">
-                                <span>Menge (kg/l) anpassen:</span>
+                                <span>Menge  anpassen:</span>
                                 <input type="number" id="menge-input" value="${basisFaktor}" oninput="liveUpdate('${r.id}')">
                             </div>
                             <h3>Zutaten</h3>
                             <ul id="dynamic-z-list">${renderZutaten(r, basisFaktor)}</ul>
                             <h3>Zubereitung</h3>
                             <p style="line-height:1.8;">${Array.isArray(r.a) ? r.a.join('<br>') : r.a}</p>
-                            <div class="hygiene"><b>WICHTIG:</b> Kühlkette einhalten und Kerntemperatur prüfen.</div>
+                            <div class="hygiene"><b>WICHTIG:</b> Lagerung & Hygienehinweis:
+Abkühlphase: Das fertige Produkt zunächst ohne Abdeckung (offen) im Kühlraum lagern, bis die
+Kerntemperatur vollständig auf Kühlschranktemperatur abgesunken ist.
+Verschluss: Erst nach dem vollständigen Erkalten den Behälter luftdicht verschließen, um Kondenswasser und
+Keimbildung zu vermeiden.</div>
                         </div>`;
                 }
             }
@@ -1199,3 +1203,4 @@ if (window.Capacitor && Capacitor.Plugins.App) {
 </body>
 
 </html>
+
