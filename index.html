@@ -34,7 +34,7 @@
             align-items: center;
             /* Verhindert, dass der Titel unter die Kamera rutscht */
             padding: calc(20px + env(safe-area-inset-top)) 30px 20px 30px;
-            background: transparent;
+            background: rgba(0, 18, 36, 0.7); backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -196,6 +196,42 @@
             #titel { font-size: 1.5rem; }
             .grid { grid-template-columns: 1fr; }
         }
+        .search-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 15px 20px;
+    color: white;
+    font-size: 1.1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+#search-input:focus {
+    border-color: var(--acc);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+}
+
+#search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-results-label {
+    font-size: 0.9rem;
+    color: var(--acc);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
     </style>
 </head>
 <body>
@@ -1092,116 +1128,142 @@ if (sessionStorage.getItem("access") !== "true") {
 
         ];
 
-        let stack = ['home'];
-        let curP = "";
+     
 
-        function render() {
-            const app = document.getElementById('app');
-            const tit = document.getElementById('titel');
-            const back = document.getElementById('back');
-            const view = stack[stack.length - 1];
+let stack = ['home'];
+let curP = "";
 
-            window.scrollTo(0, 0);
+// --- NEU: DIE SUCHFUNKTION ---
+window.handleSearch = (query) => {
+    const content = document.getElementById('home-content');
+    const q = query.toLowerCase().trim();
+    
+    if (q.length < 2) {
+        // Zeige wieder die normalen Posten-Kacheln
+        const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
+        content.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
+        return;
+    }
 
-            if (view === 'home') {
-                tit.innerText = "POSTEN";
-                back.classList.add('hidden');
-                const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
-                app.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
-            } else if (view === 'list') {
-                tit.innerText = curP.toUpperCase();
-                back.classList.remove('hidden');
-                const list = rezepte.filter(r => r.posten === curP).sort((a, b) => a.titel.localeCompare(b.titel));
-                app.innerHTML = list.map(r => `<div class="list-item" onclick="openR('${r.id}')">${r.titel}</div>`).join('');
-            } else {
-                const r = rezepte.find(i => String(i.id) === String(view));
-                if (r) {
-                    tit.innerText = "REZEPT";
-                    back.classList.remove('hidden');
-                    const basisFaktor = 1;
+    const filtered = rezepte.filter(r => 
+        r.titel.toLowerCase().includes(q) || 
+        r.posten.toLowerCase().includes(q)
+    );
 
-                    app.innerHTML = `
-                        <div class="detail">
-                            <h2 style="font-weight:200; font-size:2.5rem; margin:0 0 20px 0;">${r.titel}</h2>
-                            <div class="rechner-box">
-                                <span>Menge  anpassen:</span>
-                                <input type="number" id="menge-input" value="${basisFaktor}" oninput="liveUpdate('${r.id}')">
-                            </div>
-                            <h3>Zutaten</h3>
-                            <ul id="dynamic-z-list">${renderZutaten(r, basisFaktor)}</ul>
-                            <h3>Zubereitung</h3>
-                            <p style="line-height:1.8;">${Array.isArray(r.a) ? r.a.join('<br>') : r.a}</p>
-                            <div class="hygiene"><b>WICHTIG:</b> Lagerung & Hygienehinweis:
+    if (filtered.length > 0) {
+        content.innerHTML = `
+            <div style="font-size: 0.9rem; color: var(--acc); margin: 20px 0 10px 0; text-transform: uppercase;">${filtered.length} Treffer</div>
+            <div class="search-list">
+                ${filtered.map(r => `
+                    <div class="list-item" onclick="openR('${r.id}')">
+                        <small style="display:block; font-size:0.7rem; opacity:0.6;">${r.posten}</small>
+                        ${r.titel}
+                    </div>`).join('')}
+            </div>`;
+    } else {
+        content.innerHTML = `<div style="text-align:center; margin-top:50px; opacity:0.5;">Kein Rezept gefunden.</div>`;
+    }
+};
+
+function render() {
+    const app = document.getElementById('app');
+    const tit = document.getElementById('titel');
+    const back = document.getElementById('back');
+    const view = stack[stack.length - 1];
+
+    window.scrollTo(0, 0);
+
+    if (view === 'home') {
+        tit.innerText = "POSTEN";
+        back.classList.add('hidden');
+        const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
+        
+        // Suchfeld + Container für Kacheln/Ergebnisse
+        app.innerHTML = `
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Suchen..." oninput="handleSearch(this.value)" autocomplete="off">
+            </div>
+            <div id="home-content">
+                <div class="grid">
+                    ${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}
+                </div>
+            </div>`;
+    } else if (view === 'list') {
+        tit.innerText = curP.toUpperCase();
+        back.classList.remove('hidden');
+        const list = rezepte.filter(r => r.posten === curP).sort((a, b) => a.titel.localeCompare(b.titel));
+        app.innerHTML = list.map(r => `<div class="list-item" onclick="openR('${r.id}')">${r.titel}</div>`).join('');
+    } else {
+        const r = rezepte.find(i => String(i.id) === String(view));
+        if (r) {
+            tit.innerText = "REZEPT";
+            back.classList.remove('hidden');
+            const basisFaktor = 1;
+            app.innerHTML = `
+                <div class="detail">
+                    <h2 style="font-weight:200; font-size:2.5rem; margin:0 0 20px 0;">${r.titel}</h2>
+                    <div class="rechner-box">
+                        <span>Menge anpassen:</span>
+                        <input type="number" id="menge-input" value="${basisFaktor}" oninput="liveUpdate('${r.id}')">
+                    </div>
+                    <h3>Zutaten</h3>
+                    <ul id="dynamic-z-list">${renderZutaten(r, basisFaktor)}</ul>
+                    <h3>Zubereitung</h3>
+                    <p style="line-height:1.8;">${Array.isArray(r.a) ? r.a.join('<br>') : r.a}</p>
+                    <div class="hygiene"><b>WICHTIG:</b> Lagerung & Hygienehinweis:
 Abkühlphase: Das fertige Produkt zunächst ohne Abdeckung (offen) im Kühlraum lagern, bis die
 Kerntemperatur vollständig auf Kühlschranktemperatur abgesunken ist.
 Verschluss: Erst nach dem vollständigen Erkalten den Behälter luftdicht verschließen, um Kondenswasser und
 Keimbildung zu vermeiden.</div>
-                        </div>`;
-                }
-            }
+                </div>`;
         }
+    }
+}
 
-        function renderZutaten(r, faktor) {
-            return r.z.map(i => {
-                let wertAnzeige = "";
-                if (i.m === 0 || i.m === "" || String(i.m).toLowerCase().includes("n.b")) {
-                    wertAnzeige = "n.B.";
-                } else {
-                    let wert = i.m * faktor;
-                    let saubererWert = Number.isInteger(wert) ? wert : wert.toFixed(2);
-                    let e = i.e === "g" ? "gr" : i.e;
-                    wertAnzeige = `${saubererWert} ${e}`;
-                }
-                return `<li><b>${wertAnzeige}</b> <span>${i.n}</span></li>`;
-            }).join('');
+function renderZutaten(r, faktor) {
+    return r.z.map(i => {
+        let wertAnzeige = "";
+        if (i.m === 0 || i.m === "" || String(i.m).toLowerCase().includes("n.b")) {
+            wertAnzeige = "n.B.";
+        } else {
+            let wert = i.m * faktor;
+            let saubererWert = Number.isInteger(wert) ? wert : wert.toFixed(2);
+            let e = i.e === "g" ? "gr" : i.e;
+            wertAnzeige = `${saubererWert} ${e}`;
         }
+        return `<li><b>${wertAnzeige}</b> <span>${i.n}</span></li>`;
+    }).join('');
+}
 
-        window.liveUpdate = (id) => {
-            const r = rezepte.find(i => String(i.id) === String(id));
-            const input = document.getElementById('menge-input');
-            const zList = document.getElementById('dynamic-z-list');
-            const faktor = parseFloat(input.value) || 0;
-            zList.innerHTML = renderZutaten(r, faktor);
-        };
+window.liveUpdate = (id) => {
+    const r = rezepte.find(i => String(i.id) === String(id));
+    const input = document.getElementById('menge-input');
+    const zList = document.getElementById('dynamic-z-list');
+    const faktor = parseFloat(input.value) || 0;
+    zList.innerHTML = renderZutaten(r, faktor);
+};
 
-        window.openP = (p) => { curP = p; stack.push('list'); render(); };
-        window.openR = (id) => { stack.push(String(id)); render(); };
-        window.goB = () => { stack.pop(); render(); };
-        
-        // Vollbild-Modus für Capacitor aktivieren
-        async function enableFullScreen() {
-            if (window.Capacitor) {
-                const { StatusBar } = Capacitor.Plugins;
-                try {
-                    await StatusBar.hide();
-                    // Optional: Falls NavigationBar Plugin installiert ist
-                    if (Capacitor.Plugins.NavigationBar) {
-                        await Capacitor.Plugins.NavigationBar.hide();
-                    }
-                } catch (e) {
-                    console.log("StatusBar hide error", e);
-                }
-            }
-        }
+window.openP = (p) => { curP = p; stack.push('list'); render(); };
+window.openR = (id) => { stack.push(String(id)); render(); };
+window.goB = () => { stack.pop(); render(); };
 
-        // Start
-        render();
-        // Capacitor App-Plugin Listener für den Hardware-Zurück-Button
+async function enableFullScreen() {
+    if (window.Capacitor) {
+        const { StatusBar } = Capacitor.Plugins;
+        try { await StatusBar.hide(); } catch (e) {}
+    }
+}
+
+render();
+
 if (window.Capacitor && Capacitor.Plugins.App) {
     Capacitor.Plugins.App.addListener('backButton', () => {
-        if (stack.length > 1) {
-            // Wenn wir tiefer als die Startseite sind, geh einen Schritt zurück
-            goB();
-        } else {
-            // Wenn wir auf 'home' sind, schließe die App wirklich
-            Capacitor.Plugins.App.exitApp();
-        }
+        if (stack.length > 1) { goB(); } else { Capacitor.Plugins.App.exitApp(); }
     });
 }
-        enableFullScreen();
+enableFullScreen();
     </script>
 </body>
 
 </html>
-
 
