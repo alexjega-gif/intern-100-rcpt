@@ -1158,10 +1158,21 @@ window.goB = () => { stack.pop(); render(); };
 window.exitAppSafe = () => { if (window.Capacitor) Capacitor.Plugins.App.exitApp(); };
 
 if (window.Capacitor && Capacitor.Plugins.App) {
-    Capacitor.Plugins.App.addListener('backButton', () => { if (stack.length > 1) goB(); });
+    Capacitor.Plugins.App.addListener('backButton', (data) => {
+        // Überprüfen, ob wir tiefer als die Startseite sind
+        if (stack.length > 1) {
+            goB(); // Gehe im App-Stack einen Schritt zurück
+        } else {
+            // Wir sind auf dem Homescreen. 
+            // Hier machen wir NICHTS, damit man nicht aus Versehen rausfliegt.
+            // Die App lässt sich jetzt NUR über dein neues "X" oben rechts schließen.
+            console.log("App-Exit verhindert. Bitte das 'X' zum Schließen nutzen.");
+        }
+    });
 }
 
 render();
 </script>
 </body>
 </html>
+
