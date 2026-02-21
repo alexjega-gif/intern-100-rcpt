@@ -187,6 +187,7 @@ if (sessionStorage.getItem("access") !== "true") {
     }
 }
 
+// Hier deine Rezepte wieder einfügen
 const rezepte = [
 
             /* DEINE REZEPTE HIER */
@@ -1051,7 +1052,10 @@ const rezepte = [
             { "m": 0, "e": "n.B.", "n": "Muskat (wenig!)" }
         ],
         "a": "1. Teig & Gluten: Eier, Salz und wenig Muskat (n.B.) homogen verrühren. Mehl per Hand einarbeiten. Sprudelwasser nur bei Bedarf zugeben (Teig muss fest sein). Mit etwas Öl kräftig schlagen, bis der Teig Blasen wirft. Mit einer Kelle Öl zur Kugel formen und mit einem Touchon warm ruhen lassen, bis er samtig wird.<br><br>2. Setup: Hohen Topf (Rand geölt) mit stark gesalzenem Wasser aufkochen. 10-l-Eimer mit Eiswasser bereitstellen. Wichtig: Spätzlepresse und Gesteck komplett in Öl tauchen (benetzen).<br><br>3. Garen: Wasser aufkochen. Flamme senken. Teig sachte drücken für lange Spätzle. Wenn sie schwimmen: 1 Min. warten, wenden, 2 Min. ziehen lassen. Danach sofort im Eiswasser abschrecken.<br><br>4. Trocknung & Finish: Spätzle im Sieb auf dem Eimer an die Zuluft stellen. Alle 5 Min. schwenken, bis sie oberflächlich trocken sind. Merke: Zu feuchtes Abfüllen verkürzt die Haltbarkeit extrem."
-    }/* DEINE REZEPTE HIER */ ];
+    }/* DEINE REZEPTE HIER */ ]; 
+
+// Check für iOS
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 let stack = ['home'];
 let curP = "";
@@ -1099,7 +1103,15 @@ function render() {
     if (view === 'home') {
         tit.innerText = "POSTEN";
         back.classList.add('hidden');
-        if (closeBtn) closeBtn.classList.remove('hidden');
+        
+        // Button nur zeigen wenn Capacitor vorhanden UND kein iOS
+        if (closeBtn) {
+            if (isIOS) {
+                closeBtn.classList.add('hidden');
+            } else {
+                closeBtn.classList.remove('hidden');
+            }
+        }
         
         const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
         app.innerHTML = `
@@ -1159,14 +1171,10 @@ window.exitAppSafe = () => { if (window.Capacitor) Capacitor.Plugins.App.exitApp
 
 if (window.Capacitor && Capacitor.Plugins.App) {
     Capacitor.Plugins.App.addListener('backButton', (data) => {
-        // Überprüfen, ob wir tiefer als die Startseite sind
         if (stack.length > 1) {
-            goB(); // Gehe im App-Stack einen Schritt zurück
+            goB();
         } else {
-            // Wir sind auf dem Homescreen. 
-            // Hier machen wir NICHTS, damit man nicht aus Versehen rausfliegt.
-            // Die App lässt sich jetzt NUR über dein neues "X" oben rechts schließen.
-            console.log("App-Exit verhindert. Bitte das 'X' zum Schließen nutzen.");
+            console.log("App-Exit verhindert.");
         }
     });
 }
@@ -1175,4 +1183,3 @@ render();
 </script>
 </body>
 </html>
-
