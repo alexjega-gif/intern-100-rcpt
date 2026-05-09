@@ -12,300 +12,272 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --bg-dark: #000000;
-            --acc: #d4af37;
-            --txt-beige: #f4f1ea;
-            --border-gold: rgba(212, 175, 55, 0.4);
-            --liquid-glass: rgba(255, 255, 255, 0.05); 
-            --iphone-blur: blur(15px) saturate(180%) brightness(120%);
-            --ios-border: rgba(255, 255, 255, 0.18);
-        }
+   <style>
+    :root {
+        --bg-dark: #000000;
+        --acc: #d4af37;
+        --txt-beige: #f4f1ea;
+        --border-gold: rgba(212, 175, 55, 0.4);
+        --liquid-glass: rgba(255, 255, 255, 0.05); 
+        --iphone-blur: blur(15px) saturate(180%) brightness(120%);
+        --ios-border: rgba(255, 255, 255, 0.18);
+    }
 
-        body {
-            /* Lato als Grundschrift */
-            font-family: 'Lato', -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--txt-beige);
-            margin: 0;
-            min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
-            padding-bottom: calc(50px + env(safe-area-inset-bottom));
-            overflow-x: hidden;
-        }
-
-        /* Wasserzeichen */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: url("B100.png") no-repeat center center;
-            background-size: contain;
-            width: 85vw;
-            height: 85vw;
-            max-width: 500px;
-            opacity: 0.15; 
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        header, .container {
-            position: relative;
-            z-index: 10;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: calc(20px + env(safe-area-inset-top)) 20px 20px 20px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: var(--iphone-blur);
-            -webkit-backdrop-filter: var(--iphone-blur);
-            position: sticky;
-            top: 0;
-            border-bottom: 0.5px solid var(--border-gold);
-            min-height: 60px;
-        }
-
-        #titel {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            /* Playfair Display für Header-Titel */
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: var(--acc);
-            text-transform: uppercase;
-            margin: 0;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        .header-logo {
-            width: 140px;
-            height: 40px;
-            background: url("Logo100.png") no-repeat left center;
-            background-size: contain;
-        }
-
-        .btn, .btn-close {
-            background: rgba(212, 175, 55, 0.15);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid var(--acc);
-            color: var(--acc);
-            padding: 8px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            z-index: 20;
-        }
-
-        /* Rezept-Titel */
-        h2 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 500;
-            font-size: 2.4rem;
-            margin: 0 0 15px 0;
-            color: var(--acc);
-            font-style: italic;
-        }
-
-        /* Zutatenliste Tabellen-Look */
-        ul { padding: 0; margin: 20px 0; list-style: none; }
-        ul li {
-            display: flex;
-            align-items: flex-start;
-            padding: 12px 0;
-            border-bottom: 0.5px solid rgba(212, 175, 55, 0.15);
-        }
-        ul li b {
-            color: var(--acc);
-            min-width: 90px;
-            display: inline-block;
-            flex-shrink: 0;
-            font-weight: 700;
-        }
-        ul li span { flex-grow: 1; padding-left: 10px; line-height: 1.4; font-weight: 300; }
-
-        .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin-top: 25px;
-        }
-
-        @media (min-width: 600px) {
-            .grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-        }
-
-        .card {
-            background: var(--liquid-glass);
-            backdrop-filter: var(--iphone-blur);
-            -webkit-backdrop-filter: var(--iphone-blur);
-            height: 150px;
-            border-radius: 24px;
-            border: 0.5px solid var(--ios-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--acc);
-            text-transform: uppercase;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        }
-
-        #search-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            border: 0.5px solid var(--ios-border);
-            border-radius: 15px;
-            padding: 18px;
-            color: #fff;
-            font-family: 'Lato', sans-serif;
-            font-size: 1.1rem;
-            outline: none;
-        }
-
-        .list-item {
-            background: var(--liquid-glass);
-            backdrop-filter: var(--iphone-blur);
-            padding: 20px;
-            margin-bottom: 12px;
-            border-radius: 20px;
-            border-left: 6px solid var(--acc);
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-        }
-
-        .detail {
-            background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(30px);
-            border-radius: 32px;
-            padding: 25px;
-            border: 0.5px solid var(--ios-border);
-        }
-
-        .rechner-box {
-            background: rgba(212, 175, 55, 0.1);
-            padding: 15px;
-            border-radius: 15px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 0.5px solid var(--acc);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .rechner-box input {
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid var(--acc);
-            color: var(--acc);
-            font-family: 'Lato', sans-serif;
-            font-size: 1.2rem;
-            width: 60px;
-            text-align: center;
-            outline: none;
-        }
-
-        h3 {
-            font-family: 'Playfair Display', serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--acc);
-            padding-bottom: 5px;
-            color: var(--acc);
-        }
-
-        p { font-weight: 300; line-height: 1.8; }
-
-        .hidden { display: none !important; }
-
-        /* --- Desktop Optimierung (Nur für Bildschirme breiter als 1024px) --- */
-@media (min-width: 1024px) {
-    /* Größere Grundschrift für bessere Lesbarkeit auf Distanz */
     body {
-        font-size: 1.1rem;
+        /* Lato als Grundschrift */
+        font-family: 'Lato', -apple-system, sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--txt-beige);
+        margin: 0;
+        min-height: 100vh;
+        -webkit-tap-highlight-color: transparent;
+        padding-bottom: calc(50px + env(safe-area-inset-bottom));
+        overflow-x: hidden;
     }
 
-    /* Header-Titel im Desktop präsenter machen */
+    /* Wasserzeichen */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: url("B100.png") no-repeat center center;
+        background-size: contain;
+        width: 85vw;
+        height: 85vw;
+        max-width: 500px;
+        opacity: 0.15; 
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    header, .container {
+        position: relative;
+        z-index: 10;
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: calc(20px + env(safe-area-inset-top)) 20px 20px 20px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: var(--iphone-blur);
+        -webkit-backdrop-filter: var(--iphone-blur);
+        position: sticky;
+        top: 0;
+        border-bottom: 0.5px solid var(--border-gold);
+        min-height: 60px;
+    }
+
     #titel {
-        font-size: 1.8rem;
-        letter-spacing: 4px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        /* Playfair Display für Header-Titel */
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: var(--acc);
+        text-transform: uppercase;
+        margin: 0;
+        white-space: nowrap;
+        pointer-events: none;
     }
 
-    /* Rezept-Überschrift deutlich vergrößern */
+    /* NEU: Styling für den Logo-Link */
+    .header-logo-link {
+        text-decoration: none;
+        display: block;
+        -webkit-tap-highlight-color: transparent;
+        z-index: 30;
+    }
+
+    .header-logo {
+        width: 140px;
+        height: 40px;
+        background: url("Logo100.png") no-repeat left center;
+        background-size: contain;
+        cursor: pointer;
+    }
+
+    .btn, .btn-close {
+        background: rgba(212, 175, 55, 0.15);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid var(--acc);
+        color: var(--acc);
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        z-index: 20;
+    }
+
+    /* Rezept-Titel */
     h2 {
-        font-size: 3.5rem;
-        margin-bottom: 25px;
+        font-family: 'Playfair Display', serif;
+        font-weight: 500;
+        font-size: 2.4rem;
+        margin: 0 0 15px 0;
+        color: var(--acc);
+        font-style: italic;
     }
 
-    /* Zutatenliste: Breitere Spalten für Mengen und größere Schrift */
+    /* Zutatenliste Tabellen-Look */
+    ul { padding: 0; margin: 20px 0; list-style: none; }
     ul li {
-        padding: 15px 0;
+        display: flex;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 0.5px solid rgba(212, 175, 55, 0.15);
     }
-
     ul li b {
-        min-width: 140px; /* Mehr Platz für Mengenangaben */
-        font-size: 1.2rem;
+        color: var(--acc);
+        min-width: 90px;
+        display: inline-block;
+        flex-shrink: 0;
+        font-weight: 700;
+    }
+    ul li span { flex-grow: 1; padding-left: 10px; line-height: 1.4; font-weight: 300; }
+
+    .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-top: 25px;
     }
 
-    ul li span {
-        font-size: 1.2rem;
-        padding-left: 20px;
+    @media (min-width: 600px) {
+        .grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
     }
 
-    /* Zubereitungstext (Paragraph) */
-    p {
-        font-size: 1.25rem;
-        line-height: 2;
-        max-width: 900px; /* Verhindert zu lange Zeilen (ermüdet das Auge) */
+    .card {
+        background: var(--liquid-glass);
+        backdrop-filter: var(--iphone-blur);
+        -webkit-backdrop-filter: var(--iphone-blur);
+        height: 150px;
+        border-radius: 24px;
+        border: 0.5px solid var(--ios-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--acc);
+        text-transform: uppercase;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.6);
     }
 
-    /* Suchfeld vergrößern */
     #search-input {
-        padding: 25px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.08);
+        border: 0.5px solid var(--ios-border);
+        border-radius: 15px;
+        padding: 18px;
+        color: #fff;
+        font-family: 'Lato', sans-serif;
+        font-size: 1.1rem;
+        outline: none;
+    }
+
+    .list-item {
+        background: var(--liquid-glass);
+        backdrop-filter: var(--iphone-blur);
+        padding: 20px;
+        margin-bottom: 12px;
+        border-radius: 20px;
+        border-left: 6px solid var(--acc);
+        font-family: 'Playfair Display', serif;
         font-size: 1.3rem;
     }
 
-    /* Detail-Container bekommt mehr "Luft" */
     .detail {
-        padding: 50px;
+        background: rgba(20, 20, 20, 0.7);
+        backdrop-filter: blur(30px);
+        border-radius: 32px;
+        padding: 25px;
+        border: 0.5px solid var(--ios-border);
     }
 
-    /* Grid-Karten auf Desktop etwas höher */
-    .card {
-        height: 180px;
-        font-size: 1.6rem;
+    .rechner-box {
+        background: rgba(212, 175, 55, 0.1);
+        padding: 15px;
+        border-radius: 15px;
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 0.5px solid var(--acc);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-}
-    </style>
+
+    .rechner-box input {
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--acc);
+        color: var(--acc);
+        font-family: 'Lato', sans-serif;
+        font-size: 1.2rem;
+        width: 60px;
+        text-align: center;
+        outline: none;
+    }
+
+    h3 {
+        font-family: 'Playfair Display', serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--acc);
+        padding-bottom: 5px;
+        color: var(--acc);
+    }
+
+    p { font-weight: 300; line-height: 1.8; }
+
+    .hidden { display: none !important; }
+
+    /* --- Desktop Optimierung (Nur für Bildschirme breiter als 1024px) --- */
+    @media (min-width: 1024px) {
+        body { font-size: 1.1rem; }
+        #titel { font-size: 1.8rem; letter-spacing: 4px; }
+        h2 { font-size: 3.5rem; margin-bottom: 25px; }
+        ul li { padding: 15px 0; }
+        ul li b { min-width: 140px; font-size: 1.2rem; }
+        ul li span { font-size: 1.2rem; padding-left: 20px; }
+        p { font-size: 1.25rem; line-height: 2; max-width: 900px; }
+        #search-input { padding: 25px; font-size: 1.3rem; }
+        .detail { padding: 50px; }
+        .card { height: 180px; font-size: 1.6rem; }
+    }
+</style>
 </head>
 <body>
 
 <header>
-    <button id="back" class="btn hidden" onclick="goB()">Zurück</button>
-    <div class="header-logo" id="logo-div"></div>
+    <!-- Logo bleibt links und führt zur Speisekarte -->
+    <a href="https://100biere.de/speisekarte/" class="header-logo-link">
+        <div class="header-logo" id="logo-div"></div>
+    </a>
+    
     <div id="titel">START</div>
-    <button id="close-app" class="btn hidden" onclick="exitAppSafe()">✕</button>
+
+    <!-- Der Zurück-Button ist jetzt rechts platziert -->
+    <div class="header-right">
+        <button id="back" class="btn hidden" onclick="goB()">Zurück</button>
+        <button id="close-app" class="btn hidden" onclick="exitAppSafe()">✕</button>
+    </div>
 </header>
 
 <div class="container" id="app"></div>
