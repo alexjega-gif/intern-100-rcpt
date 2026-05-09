@@ -3,184 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rezepte 2026</title>
+    <title>Hd100B_Küche</title>
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Google Fonts: Playfair Display für Titel & Lato für Text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-grad: radial-gradient(circle at center, #1e5799 0%, #133d6b 50%, #001224 100%);
-            --txt: #ffffff;
-            --glass: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --glossy: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%);
-            --acc: #00d2ff;
+            --bg-dark: #000000;
+            --acc: #d4af37;
+            --txt-beige: #f4f1ea;
+            --border-gold: rgba(212, 175, 55, 0.4);
+            --liquid-glass: rgba(255, 255, 255, 0.05); 
+            --iphone-blur: blur(15px) saturate(180%) brightness(120%);
+            --ios-border: rgba(255, 255, 255, 0.18);
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-            background: var(--bg-grad);
-            background-attachment: fixed;
-            color: var(--txt);
+            /* Lato als Grundschrift */
+            font-family: 'Lato', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--txt-beige);
             margin: 0;
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
             padding-bottom: calc(50px + env(safe-area-inset-bottom));
+            overflow-x: hidden;
+        }
+
+        /* Wasserzeichen */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: url("B100.png") no-repeat center center;
+            background-size: contain;
+            width: 85vw;
+            height: 85vw;
+            max-width: 500px;
+            opacity: 0.15; 
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        header, .container {
+            position: relative;
+            z-index: 10;
         }
 
         header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: calc(20px + env(safe-area-inset-top)) 30px 20px 30px;
-            background: rgba(0, 18, 36, 0.7); 
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            justify-content: space-between;
+            padding: calc(20px + env(safe-area-inset-top)) 20px 20px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: var(--iphone-blur);
+            -webkit-backdrop-filter: var(--iphone-blur);
             position: sticky;
             top: 0;
-            z-index: 1000;
+            border-bottom: 0.5px solid var(--border-gold);
+            min-height: 60px;
         }
 
         #titel {
-            font-size: 1.8rem;
-            font-weight: 200;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.7);
-            text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
-            flex-grow: 1;
-            text-align: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            /* Playfair Display für Header-Titel */
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--acc);
+            text-transform: uppercase;
+            margin: 0;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .header-logo {
+            width: 140px;
+            height: 40px;
+            background: url("Logo100.png") no-repeat left center;
+            background-size: contain;
         }
 
         .btn, .btn-close {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(212, 175, 55, 0.15);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid var(--acc);
+            color: var(--acc);
+            padding: 8px 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            min-width: 60px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            z-index: 20;
         }
 
-        .btn-close { background: rgba(255, 50, 50, 0.2); font-size: 1.2rem; }
+        /* Rezept-Titel */
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            font-size: 2.4rem;
+            margin: 0 0 15px 0;
+            color: var(--acc);
+            font-style: italic;
+        }
+
+        /* Zutatenliste Tabellen-Look */
+        ul { padding: 0; margin: 20px 0; list-style: none; }
+        ul li {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 0.5px solid rgba(212, 175, 55, 0.15);
+        }
+        ul li b {
+            color: var(--acc);
+            min-width: 90px;
+            display: inline-block;
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+        ul li span { flex-grow: 1; padding-left: 10px; line-height: 1.4; font-weight: 300; }
 
         .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        @media (min-width: 600px) {
+            .grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
         }
 
         .card {
-            background: var(--glass);
-            height: 140px;
-            border-radius: 12px;
-            border: 2px solid var(--glass-border);
+            background: var(--liquid-glass);
+            backdrop-filter: var(--iphone-blur);
+            -webkit-backdrop-filter: var(--iphone-blur);
+            height: 150px;
+            border-radius: 24px;
+            border: 0.5px solid var(--ios-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            font-weight: 500;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.2s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-        }
-
-        .card:active { transform: scale(0.95); border-color: var(--acc); }
-
-        .list-item {
-            background: var(--glass);
-            padding: 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 5px solid var(--acc);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .detail {
-            backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px; 
-            padding: 25px;
-        }
-
-        .rechner-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid var(--acc);
-        }
-
-        .rechner-box input {
-            width: 80px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid var(--acc);
-            color: white;
-            font-size: 1.4rem;
-            text-align: center;
+            color: var(--acc);
+            text-transform: uppercase;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
 
         #search-input {
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 15px 20px;
-            color: white;
+            border: 0.5px solid var(--ios-border);
+            border-radius: 15px;
+            padding: 18px;
+            color: #fff;
+            font-family: 'Lato', sans-serif;
             font-size: 1.1rem;
             outline: none;
-            box-sizing: border-box;
         }
 
-        ul { list-style: none; padding: 0; }
-        li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; }
-        b { color: var(--acc); min-width: 80px; display: inline-block; }
+        .list-item {
+            background: var(--liquid-glass);
+            backdrop-filter: var(--iphone-blur);
+            padding: 20px;
+            margin-bottom: 12px;
+            border-radius: 20px;
+            border-left: 6px solid var(--acc);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+        }
+
+        .detail {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(30px);
+            border-radius: 32px;
+            padding: 25px;
+            border: 0.5px solid var(--ios-border);
+        }
+
+        .rechner-box {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 0.5px solid var(--acc);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rechner-box input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--acc);
+            color: var(--acc);
+            font-family: 'Lato', sans-serif;
+            font-size: 1.2rem;
+            width: 60px;
+            text-align: center;
+            outline: none;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--acc);
+            padding-bottom: 5px;
+            color: var(--acc);
+        }
+
+        p { font-weight: 300; line-height: 1.8; }
 
         .hidden { display: none !important; }
 
-        @media (max-width: 600px) {
-            #titel { font-size: 1.3rem; }
-            header { padding: calc(15px + env(safe-area-inset-top)) 15px 15px 15px; }
-        }
+        /* --- Desktop Optimierung (Nur für Bildschirme breiter als 1024px) --- */
+@media (min-width: 1024px) {
+    /* Größere Grundschrift für bessere Lesbarkeit auf Distanz */
+    body {
+        font-size: 1.1rem;
+    }
+
+    /* Header-Titel im Desktop präsenter machen */
+    #titel {
+        font-size: 1.8rem;
+        letter-spacing: 4px;
+    }
+
+    /* Rezept-Überschrift deutlich vergrößern */
+    h2 {
+        font-size: 3.5rem;
+        margin-bottom: 25px;
+    }
+
+    /* Zutatenliste: Breitere Spalten für Mengen und größere Schrift */
+    ul li {
+        padding: 15px 0;
+    }
+
+    ul li b {
+        min-width: 140px; /* Mehr Platz für Mengenangaben */
+        font-size: 1.2rem;
+    }
+
+    ul li span {
+        font-size: 1.2rem;
+        padding-left: 20px;
+    }
+
+    /* Zubereitungstext (Paragraph) */
+    p {
+        font-size: 1.25rem;
+        line-height: 2;
+        max-width: 900px; /* Verhindert zu lange Zeilen (ermüdet das Auge) */
+    }
+
+    /* Suchfeld vergrößern */
+    #search-input {
+        padding: 25px;
+        font-size: 1.3rem;
+    }
+
+    /* Detail-Container bekommt mehr "Luft" */
+    .detail {
+        padding: 50px;
+    }
+
+    /* Grid-Karten auf Desktop etwas höher */
+    .card {
+        height: 180px;
+        font-size: 1.6rem;
+    }
+}
     </style>
 </head>
 <body>
 
 <header>
-    <button id="back" class="btn hidden" onclick="goB()">Back</button>
+    <button id="back" class="btn hidden" onclick="goB()">Zurück</button>
+    <div class="header-logo" id="logo-div"></div>
     <div id="titel">START</div>
-    <button id="close-app" class="btn-close hidden" onclick="exitAppSafe()">✕</button>
+    <button id="close-app" class="btn hidden" onclick="exitAppSafe()">✕</button>
 </header>
 
 <div class="container" id="app"></div>
 
-<script type="text/javascript">
-// Passwort-Schutz
+<script>
+// Passwort & Rezepte Logik (Rezepte Array leer lassen für deine Daten)
 const pw = "5556";
 if (sessionStorage.getItem("access") !== "true") {
     let input = prompt("Bitte Passwort eingeben:");
     if (input === pw) {
         sessionStorage.setItem("access", "true");
     } else {
-        document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50px;'>Zugriff verweigert.</h1>";
+        document.body.innerHTML = "<h1 style='color:var(--acc); text-align:center; margin-top:50px;'>Zugriff verweigert.</h1>";
         window.stop();
     }
 }
 
-// Rezepte-Datenbank
 const rezepte = [
             /* DEINE REZEPTE HIER */
 {
@@ -1256,13 +1398,11 @@ const rezepte = [
     }
 }
 ];
-// Zentrale Variablen
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 let currentLang = localStorage.getItem("lang") || "de";
 let stack = ['home'];
 let curP = "";
 
-// Sprach-Helper
 const t = (field) => {
     if (typeof field === 'object' && field !== null) {
         return field[currentLang] || field['de'] || "";
@@ -1270,124 +1410,84 @@ const t = (field) => {
     return field || "";
 };
 
-window.toggleLang = () => {
-    currentLang = currentLang === "de" ? "en" : "de";
-    localStorage.setItem("lang", currentLang);
-    render(); 
-};
-
-// Suche
-window.handleSearch = (query) => {
-    const content = document.getElementById('home-content');
-    if (!content) return;
-    const q = query.toLowerCase().trim();
-    
-    if (q.length < 2) {
-        renderHomeContent();
-        return;
-    }
-
-    const filtered = rezepte.filter(r => 
-        t(r.titel).toLowerCase().includes(q) || 
-        r.posten.toLowerCase().includes(q)
-    );
-
-    if (filtered.length > 0) {
-        content.innerHTML = `
-            <div style="font-size: 0.9rem; color: var(--acc); margin: 20px 0 10px 0;">${filtered.length} TREFFER</div>
-            <div class="search-list">
-                ${filtered.map(r => `
-                    <div class="list-item" onclick="openR('${r.id}')">
-                        <small style="display:block; font-size:0.7rem; opacity:0.6;">${r.posten}</small>
-                        ${t(r.titel)}
-                    </div>`).join('')}
-            </div>`;
-    } else {
-        content.innerHTML = `<div style="text-align:center; margin-top:50px; opacity:0.5;">${currentLang === 'de' ? 'Kein Rezept gefunden.' : 'No recipe found.'}</div>`;
-    }
-};
-
-function renderHomeContent() {
-    const content = document.getElementById('home-content');
-    const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
-    content.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
-}
-
 function render() {
     const app = document.getElementById('app');
     const tit = document.getElementById('titel');
+    const logo = document.getElementById('logo-div');
     const back = document.getElementById('back');
-    const closeBtn = document.getElementById('close-app');
     const view = stack[stack.length - 1];
 
     window.scrollTo(0, 0);
-    const langBtnHtml = `<button class="btn" onclick="toggleLang()" style="margin-left:10px; min-width:40px;">${currentLang.toUpperCase()}</button>`;
 
     if (view === 'home') {
         tit.innerText = currentLang === 'de' ? "POSTEN" : "STATIONS";
         back.classList.add('hidden');
-        if (closeBtn) isIOS ? closeBtn.classList.add('hidden') : closeBtn.classList.remove('hidden');
-        
+        logo.classList.remove('hidden');
         app.innerHTML = `
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <input type="text" id="search-input" placeholder="${currentLang === 'de' ? 'Suchen...' : 'Search...'}" oninput="handleSearch(this.value)" autocomplete="off" style="flex-grow:1;">
-                ${langBtnHtml}
+                <button class="btn" onclick="window.toggleLang()">${currentLang.toUpperCase()}</button>
             </div>
             <div id="home-content"></div>`;
         renderHomeContent();
-    } else {
+    } else if (view === 'list') {
         back.classList.remove('hidden');
-        if (closeBtn) closeBtn.classList.add('hidden');
-        
-        if (view === 'list') {
-            tit.innerText = curP.toUpperCase();
-            const list = rezepte.filter(r => r.posten === curP).sort((a, b) => t(a.titel).localeCompare(t(b.titel)));
-            app.innerHTML = list.map(r => `<div class="list-item" onclick="openR('${r.id}')">${t(r.titel)}</div>`).join('');
-        } else {
-            const r = rezepte.find(i => String(i.id) === String(view));
-            if (r) {
-                tit.innerText = currentLang === 'de' ? "REZEPT" : "RECIPE";
-                const basisFaktor = 1;
-                const rawA = t(r.a);
-                const formatA = Array.isArray(rawA) ? rawA.join('<br>') : rawA.replace(/\n/g, '<br>');
-
-                app.innerHTML = `
-                    <div class="detail">
-                        <h2 style="font-weight:200; font-size:2.2rem; margin:0 0 20px 0;">${t(r.titel)}</h2>
-                        <div class="rechner-box">
-                            <span>${currentLang === 'de' ? 'Menge anpassen:' : 'Adjust quantity:'}</span>
-                            <input type="number" id="menge-input" inputmode="decimal" value="${basisFaktor}" oninput="liveUpdate('${r.id}')">
-                        </div>
-                        <h3>${currentLang === 'de' ? 'Zutaten' : 'Ingredients'}</h3>
-                        <ul id="dynamic-z-list">${renderZutaten(r, basisFaktor)}</ul>
-                        <p style="line-height:1.8; margin-top:20px;">${formatA}</p>
-                    </div>`;
-            }
+        logo.classList.add('hidden');
+        tit.innerText = curP.toUpperCase();
+        const list = rezepte.filter(r => r.posten === curP).sort((a, b) => t(a.titel).localeCompare(t(b.titel)));
+        app.innerHTML = list.map(r => `<div class="list-item" onclick="openR('${r.id}')">${t(r.titel)}</div>`).join('');
+    } else {
+        const r = rezepte.find(i => String(i.id) === String(view));
+        if (r) {
+            back.classList.remove('hidden');
+            logo.classList.add('hidden');
+            tit.innerText = currentLang === 'de' ? "REZEPT" : "RECIPE";
+            app.innerHTML = `
+                <div class="detail">
+                    <h2>${t(r.titel)}</h2>
+                    <div class="rechner-box">
+                        <span>${currentLang === 'de' ? 'Menge:' : 'Amount:'}</span>
+                        <input type="number" id="menge-input" value="1" oninput="liveUpdate('${r.id}')">
+                    </div>
+                    <h3>${currentLang === 'de' ? 'Zutaten' : 'Ingredients'}</h3>
+                    <ul id="dynamic-z-list">${renderZutaten(r, 1)}</ul>
+                    <h3 style="margin-top:25px;">${currentLang === 'de' ? 'Zubereitung' : 'Preparation'}</h3>
+                    <p>${t(r.a).replace(/\n/g, '<br>')}</p>
+                </div>`;
         }
     }
 }
 
 function renderZutaten(r, faktor) {
     return r.z.map(i => {
-        let wertAnzeige = (i.m === 0 || i.m === "" || String(i.m).toLowerCase().includes("n.b")) 
-            ? "n.B." 
-            : `${(i.m * faktor).toFixed(2).replace('.00','')} ${i.e === "g" ? "gr" : i.e}`;
+        let istNB = (i.m === 0 || i.m === "" || i.e === "n.B." || (typeof i.m === 'string' && i.m.toLowerCase().includes("n.b")));
+        let wertAnzeige = istNB ? "n.B." : `${(i.m * faktor).toFixed(2).replace('.00','').replace('.',',')} ${i.e === "g" ? "gr" : i.e}`;
         return `<li><b>${wertAnzeige}</b> <span>${t(i.n)}</span></li>`;
     }).join('');
 }
 
+window.toggleLang = () => { currentLang = currentLang === "de" ? "en" : "de"; localStorage.setItem("lang", currentLang); render(); };
 window.liveUpdate = (id) => {
     const r = rezepte.find(i => String(i.id) === String(id));
-    const input = document.getElementById('menge-input');
-    const faktor = parseFloat(input.value) || 0;
+    const faktor = parseFloat(document.getElementById('menge-input').value) || 0;
     document.getElementById('dynamic-z-list').innerHTML = renderZutaten(r, faktor);
 };
-
+window.handleSearch = (query) => {
+    const content = document.getElementById('home-content');
+    const q = query.toLowerCase().trim();
+    if (q.length < 2) { renderHomeContent(); return; }
+    const filtered = rezepte.filter(r => t(r.titel).toLowerCase().includes(q));
+    content.innerHTML = filtered.map(r => `<div class="list-item" onclick="openR('${r.id}')"><small style="color:var(--acc); font-family:Lato;">${r.posten}</small><br>${t(r.titel)}</div>`).join('');
+};
+function renderHomeContent() {
+    const content = document.getElementById('home-content');
+    const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
+    content.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
+}
 window.openP = (p) => { curP = p; stack.push('list'); render(); };
 window.openR = (id) => { stack.push(String(id)); render(); };
 window.goB = () => { stack.pop(); render(); };
 window.exitAppSafe = () => { if (window.Capacitor) Capacitor.Plugins.App.exitApp(); };
-
 render();
 </script>
 </body>
