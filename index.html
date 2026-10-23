@@ -6,11 +6,6 @@
     <title>Hd100B_Küche</title>
     <link rel="apple-touch-icon" href="icon.png"> <link rel="manifest" href="manifest.json">
     <meta name="robots" content="noindex, nofollow">
-    
-    <!-- Google Fonts: Nur noch Playfair Display für Titel -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
    <style>
     :root {
@@ -24,7 +19,7 @@
     }
 
     body {
-        /* System-Font-Stack statt Lato */
+        /* Einheitlicher System-Font-Stack für die gesamte App */
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         background-color: var(--bg-dark);
         color: var(--txt-beige);
@@ -75,10 +70,9 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        /* Playfair Display für Header-Titel */
-        font-family: 'Playfair Display', serif;
+        /* Nutzt jetzt auch die System-Schriftart (Fett & Uppercase) */
         font-size: 1.4rem;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 1px;
         color: var(--acc);
         text-transform: uppercase;
@@ -120,12 +114,11 @@
 
     /* Rezept-Titel */
     h2 {
-        font-family: 'Playfair Display', serif;
-        font-weight: 500;
-        font-size: 2.4rem;
+        font-weight: 700;
+        font-size: 2.2rem;
         margin: 0 0 15px 0;
         color: var(--acc);
-        font-style: italic;
+        font-style: normal;
     }
 
     /* Zutatenliste Tabellen-Look */
@@ -168,9 +161,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: 'Playfair Display', serif;
         font-size: 1.3rem;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         color: var(--acc);
         text-transform: uppercase;
@@ -195,8 +187,8 @@
         margin-bottom: 12px;
         border-radius: 20px;
         border-left: 6px solid var(--acc);
-        font-family: 'Playfair Display', serif;
         font-size: 1.3rem;
+        font-weight: 600;
     }
 
     .detail {
@@ -233,13 +225,13 @@
     }
 
     h3 {
-        font-family: 'Playfair Display', serif;
         text-transform: uppercase;
         letter-spacing: 1px;
         font-size: 1.1rem;
         border-bottom: 1px solid var(--acc);
         padding-bottom: 5px;
         color: var(--acc);
+        font-weight: 700;
     }
 
     p { font-weight: 300; line-height: 1.8; }
@@ -250,7 +242,7 @@
     @media (min-width: 1024px) {
         body { font-size: 1.1rem; }
         #titel { font-size: 1.8rem; letter-spacing: 4px; }
-        h2 { font-size: 3.5rem; margin-bottom: 25px; }
+        h2 { font-size: 3.2rem; margin-bottom: 25px; }
         ul li { padding: 15px 0; }
         ul li b { min-width: 140px; font-size: 1.2rem; }
         ul li span { font-size: 1.2rem; padding-left: 20px; }
@@ -281,7 +273,7 @@
 <div class="container" id="app"></div>
 
 <script>
-// Passwort & Rezepte Logik (Rezepte Array leer lassen für deine Daten)
+// Passwort & Rezepte Logik
 const pw = "5556";
 if (sessionStorage.getItem("access") !== "true") {
     let input = prompt("Bitte Passwort eingeben:");
