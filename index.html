@@ -19,8 +19,9 @@
     }
 
     body {
-        /* Einheitlicher System-Font-Stack für die gesamte App */
+        /* Moderner Windows-/Fluent-Design-Look (schlank & leicht) */
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 300;
         background-color: var(--bg-dark);
         color: var(--txt-beige);
         margin: 0;
@@ -70,10 +71,9 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        /* Nutzt jetzt auch die System-Schriftart (Fett & Uppercase) */
-        font-size: 1.4rem;
-        font-weight: 700;
-        letter-spacing: 1px;
+        font-size: 1.3rem;
+        font-weight: 400; /* Schlank statt fett */
+        letter-spacing: 2px;
         color: var(--acc);
         text-transform: uppercase;
         margin: 0;
@@ -81,7 +81,6 @@
         pointer-events: none;
     }
 
-    /* NEU: Styling für den Logo-Link */
     .header-logo-link {
         text-decoration: none;
         display: block;
@@ -106,19 +105,19 @@
         padding: 8px 12px;
         border-radius: 10px;
         cursor: pointer;
-        font-weight: 700;
+        font-weight: 400;
         text-transform: uppercase;
         font-size: 0.7rem;
         z-index: 20;
     }
 
-    /* Rezept-Titel */
+    /* Rezept-Titel (deutlich schlanker & edler) */
     h2 {
-        font-weight: 700;
+        font-weight: 300;
         font-size: 2.2rem;
         margin: 0 0 15px 0;
         color: var(--acc);
-        font-style: normal;
+        letter-spacing: -0.5px;
     }
 
     /* Zutatenliste Tabellen-Look */
@@ -134,7 +133,7 @@
         min-width: 90px;
         display: inline-block;
         flex-shrink: 0;
-        font-weight: 700;
+        font-weight: 400;
     }
     ul li span { flex-grow: 1; padding-left: 10px; line-height: 1.4; font-weight: 300; }
 
@@ -161,8 +160,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
-        font-weight: 700;
+        font-size: 1.2rem;
+        font-weight: 400; /* Nicht mehr fett, sondern leicht */
+        letter-spacing: 1px;
         cursor: pointer;
         color: var(--acc);
         text-transform: uppercase;
@@ -177,6 +177,7 @@
         padding: 18px;
         color: #fff;
         font-size: 1.1rem;
+        font-weight: 300;
         outline: none;
     }
 
@@ -187,8 +188,8 @@
         margin-bottom: 12px;
         border-radius: 20px;
         border-left: 6px solid var(--acc);
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.2rem;
+        font-weight: 400;
     }
 
     .detail {
@@ -211,6 +212,7 @@
         font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 1px;
+        font-weight: 300;
     }
 
     .rechner-box input {
@@ -219,6 +221,7 @@
         border-bottom: 2px solid var(--acc);
         color: var(--acc);
         font-size: 1.2rem;
+        font-weight: 400;
         width: 60px;
         text-align: center;
         outline: none;
@@ -227,11 +230,11 @@
     h3 {
         text-transform: uppercase;
         letter-spacing: 1px;
-        font-size: 1.1rem;
+        font-size: 1rem;
         border-bottom: 1px solid var(--acc);
         padding-bottom: 5px;
         color: var(--acc);
-        font-weight: 700;
+        font-weight: 400;
     }
 
     p { font-weight: 300; line-height: 1.8; }
@@ -241,15 +244,15 @@
     /* --- Desktop Optimierung (Nur für Bildschirme breiter als 1024px) --- */
     @media (min-width: 1024px) {
         body { font-size: 1.1rem; }
-        #titel { font-size: 1.8rem; letter-spacing: 4px; }
-        h2 { font-size: 3.2rem; margin-bottom: 25px; }
+        #titel { font-size: 1.6rem; letter-spacing: 3px; }
+        h2 { font-size: 3rem; margin-bottom: 25px; }
         ul li { padding: 15px 0; }
-        ul li b { min-width: 140px; font-size: 1.2rem; }
-        ul li span { font-size: 1.2rem; padding-left: 20px; }
-        p { font-size: 1.25rem; line-height: 2; max-width: 900px; }
-        #search-input { padding: 25px; font-size: 1.3rem; }
+        ul li b { min-width: 140px; font-size: 1.1rem; }
+        ul li span { font-size: 1.1rem; padding-left: 20px; }
+        p { font-size: 1.2rem; line-height: 2; max-width: 900px; }
+        #search-input { padding: 25px; font-size: 1.2rem; }
         .detail { padding: 50px; }
-        .card { height: 180px; font-size: 1.6rem; }
+        .card { height: 180px; font-size: 1.5rem; }
     }
 </style>
 </head>
@@ -280,7 +283,7 @@ if (sessionStorage.getItem("access") !== "true") {
     if (input === pw) {
         sessionStorage.setItem("access", "true");
     } else {
-        document.body.innerHTML = "<h1 style='color:var(--acc); text-align:center; margin-top:50px;'>Zugriff verweigert.</h1>";
+        document.body.innerHTML = "<h1 style='color:var(--acc); text-align:center; font-weight:300; margin-top:50px;'>Zugriff verweigert.</h1>";
         window.stop();
     }
 }
