@@ -1456,10 +1456,69 @@ function renderHomeContent() {
     const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
     content.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
 }
-window.openP = (p) => { curP = p; stack.push('list'); render(); };
-window.openR = (id) => { stack.push(String(id)); render(); };
-window.goB = () => { stack.pop(); render(); };
+window.toggleLang = () => { currentLang = currentLang === "de" ? "en" : "de"; localStorage.setItem("lang", currentLang); render(); };
+
+window.liveUpdate = (id) => {
+    const r = rezepte.find(i => String(i.id) === String(id));
+    const faktor = parseFloat(document.getElementById('menge-input').value) || 0;
+    document.getElementById('dynamic-z-list').innerHTML = renderZutaten(r, faktor);
+};
+
+window.handleSearch = (query) => {
+    const content = document.getElementById('home-content');
+    const q = query.toLowerCase().trim();
+    if (q.length < 2) { renderHomeContent(); return; }
+    const filtered = rezepte.filter(r => t(r.titel).toLowerCase().includes(q));
+    content.innerHTML = filtered.map(r => `<div class="list-item" onclick="openR('${r.id}')"><small style="color:var(--acc); font-family:Lato;">${r.posten}</small><br>${t(r.titel)}</div>`).join('');
+};
+
+function renderHomeContent() {
+    const content = document.getElementById('home-content');
+    const pSet = [...new Set(rezepte.map(r => r.posten))].filter(p => p).sort();
+    content.innerHTML = `<div class="grid">${pSet.map(p => `<div class="card" onclick="openP('${p}')">${p}</div>`).join('')}</div>`;
+}
+
+// --- ANPASSUNG FÜR BROWSER-HISTORIE & ANDROID BACK-BUTTON ---
+
+window.openP = (p) => { 
+    curP = p; 
+    stack.push('list'); 
+    history.pushState({ view: 'list', curP: curP }, ''); // In Browser-Historie eintragen
+    render(); 
+};
+
+window.openR = (id) => { 
+    stack.push(String(id)); 
+    history.pushState({ view: String(id) }, ''); // In Browser-Historie eintragen
+    render(); 
+};
+
+// Zurück-Button oben rechts im Header
+window.goB = () => { 
+    if (stack.length > 1) {
+        history.back(); // Triggert automatisch das 'popstate'-Event unten!
+    }
+};
+
+// Reagiert auf den Android Hardware-Zurück-Button & history.back()
+window.addEventListener('popstate', (event) => {
+    if (stack.length > 1) {
+        stack.pop(); // Entfernt die aktuelle Ansicht aus dem Stack
+        
+        // Wenn der vorherige View die Liste war, stellen wir den Posten-Namen wieder her
+        if (event.state && event.state.curP) {
+            curP = event.state.curP;
+        }
+        
+        render();
+    }
+});
+
 window.exitAppSafe = () => { if (window.Capacitor) Capacitor.Plugins.App.exitApp(); };
+
+// Initialen Status für die Startseite in der Historie verankern
+history.replaceState({ view: 'home' }, '');
+
 render();
 </script>
 </body>
