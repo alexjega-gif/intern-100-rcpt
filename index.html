@@ -1426,11 +1426,19 @@ function render() {
 function renderZutaten(r, faktor) {
     if (!r.z) return '';
     return r.z.map(i => {
-        let istNB = (i.m === 0 || i.m === "" || i.e === "n.B." || (typeof i.m === 'string' && i.m.toLowerCase().includes("n.b")));
-        let wertAnzeige = istNB ? "n.B." : `${(i.m * faktor).toFixed(2).replace('.00','').replace('.',',')} ${i.e === "g" ? "gr" : i.e}`;
-        return `<li><b>${wertAnzeige}</b> <span>${t(i.n)}</span></li>`;
+        let einheitText = t(i.e);
+        let istNB = (i.m === 0 || i.m === "" || einheitText.toLowerCase().includes("n.b") || einheitText.toLowerCase().includes("a.n") || einheitText.toLowerCase().includes("t.t"));
+        
+        let wertAnzeige;
+        if (istNB) {
+            wertAnzeige = einheitText || (currentLang === 'de' ? "n.B.:" : "a.n.");
+        } else {
+            wertAnzeige = `${(i.m * faktor).toFixed(2).replace('.00','').replace('.',',')} ${i.e === "g" ? "gr" : einheitText}`;
+        }
+        return `<li><b>${wertAnzeige}</b> <span>${t(i.n)}</span><li>`;
     }).join('');
 }
+
 
 window.toggleLang = () => { currentLang = currentLang === "de" ? "en" : "de"; localStorage.setItem("lang", currentLang); render(); };
 
