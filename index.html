@@ -1425,28 +1425,64 @@ function render() {
 
 function renderZutaten(r, faktor) {
     if (!r.z) return '';
-    return r.z.map(i => {
+    return r.z.map((i, index) => {
         let einheitText = t(i.e);
         let istNB = (i.m === 0 || i.m === "" || einheitText.toLowerCase().includes("n.b") || einheitText.toLowerCase().includes("a.n") || einheitText.toLowerCase().includes("t.t"));
         
         let wertAnzeige;
         if (istNB) {
-            wertAnzeige = einheitText || (currentLang === 'de' ? "n.B.:" : "a.n.");
+            wertAnzeige = `<b>${einheitText || (currentLang === 'de' ? "n.B.:" : "a.n.")}</b>`;
         } else {
-            wertAnzeige = `${(i.m * faktor).toFixed(2).replace('.00','').replace('.',',')} ${i.e === "g" ? "gr" : einheitText}`;
+            let berechneterWert = (i.m * faktor).toFixed(2).replace('.00','').replace('.',',');
+            
+            wertAnzeige = `
+                <input type="text" 
+                       class="zutat-mengen-input" 
+                       value="${berechneterWert}" 
+                       onchange="recalcByIngredient('${r.id}', ${index}, this.value.replace(',', '.'))"
+                       style="width: 65px; background: transparent; border: none; border-bottom: 1px solid var(--acc); color: var(--acc); font-weight: 400; text-align: center; font-size: 1rem; outline: none;">
+                <b>${i.e === "g" ? "gr" : einheitText}</b>
+            `;
         }
-        return `<li><b>${wertAnzeige}</b> <span>${t(i.n)}</span><li>`;
+        return `<li>${wertAnzeige} <span>${t(i.n)}</span></li>`;
     }).join('');
 }
 
 
+
+
 window.toggleLang = () => { currentLang = currentLang === "de" ? "en" : "de"; localStorage.setItem("lang", currentLang); render(); };
 
+// 1. Haupt-Mengenfeld oben (vervielfacht das ganze Rezept)
 window.liveUpdate = (id) => {
     const r = rezepte.find(i => String(i.id) === String(id));
     const faktor = parseFloat(document.getElementById('menge-input').value) || 0;
     document.getElementById('dynamic-z-list').innerHTML = renderZutaten(r, faktor);
 };
+
+// 2. Direkt-Eingabe bei einer Zutat (Dreisatz-Berechnung für alle anderen Zutaten)
+window.recalcByIngredient = (id, zutatIndex, neuerWert) => {
+    const r = rezepte.find(i => String(i.id) === String(id));
+    if (!r || !r.z[zutatIndex]) return;
+
+    const basisMenge = r.z[zutatIndex].m;
+    const eingabeMenge = parseFloat(neuerWert);
+
+    if (!isNaN(eingabeMenge) && basisMenge > 0) {
+        // Neuer Faktor = Eingegebene Menge / ursprüngliche Rezept-Menge
+        const neuerFaktor = eingabeMenge / basisMenge;
+        
+        // Aktualisiert das Haupt-Mengenfeld oben
+        const mengeInput = document.getElementById('menge-input');
+        if (mengeInput) {
+            mengeInput.value = neuerFaktor.toFixed(2).replace('.00', '');
+        }
+
+        // Rendert alle Zutaten mit dem neuen Faktor neu
+        document.getElementById('dynamic-z-list').innerHTML = renderZutaten(r, neuerFaktor);
+    }
+};
+
 
 window.handleSearch = (query) => {
     const content = document.getElementById('home-content');
