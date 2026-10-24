@@ -1439,6 +1439,7 @@ function renderZutaten(r, faktor) {
                 <input type="text" 
                        class="zutat-mengen-input" 
                        value="${berechneterWert}" 
+                       onfocus="this.select()"
                        onchange="recalcByIngredient('${r.id}', ${index}, this.value.replace(',', '.'))"
                        style="width: 65px; background: transparent; border: none; border-bottom: 1px solid var(--acc); color: var(--acc); font-weight: 400; text-align: center; font-size: 1rem; outline: none;">
                 <b>${i.e === "g" ? "gr" : einheitText}</b>
@@ -1447,6 +1448,7 @@ function renderZutaten(r, faktor) {
         return `<li>${wertAnzeige} <span>${t(i.n)}</span></li>`;
     }).join('');
 }
+
 
 
 
