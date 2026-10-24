@@ -1431,23 +1431,26 @@ function renderZutaten(r, faktor) {
         
         let wertAnzeige;
         if (istNB) {
-            wertAnzeige = `<b>${einheitText || (currentLang === 'de' ? "n.B.:" : "a.n.")}</b>`;
+            wertAnzeige = `<span style="display: inline-block; width: 110px; text-align: left;"><b>${einheitText || (currentLang === 'de' ? "n.B.:" : "a.n.")}</b></span>`;
         } else {
             let berechneterWert = (i.m * faktor).toFixed(2).replace('.00','').replace('.',',');
             
             wertAnzeige = `
-                <input type="text" 
-                       class="zutat-mengen-input" 
-                       value="${berechneterWert}" 
-                       onfocus="setTimeout(() => this.select(), 50)"
-                       onchange="recalcByIngredient('${r.id}', ${index}, this.value.replace(',', '.'))"
-                       style="width: 65px; background: transparent; border: none; border-bottom: 1px solid var(--acc); color: var(--acc); font-weight: 400; text-align: center; font-size: 1rem; outline: none;">
-                <b>${i.e === "g" ? "gr" : einheitText}</b>
+                <span style="display: inline-flex; align-items: center; width: 110px;">
+                    <input type="text" 
+                           class="zutat-mengen-input" 
+                           value="${berechneterWert}" 
+                           onfocus="setTimeout(() => this.select(), 50)"
+                           onchange="recalcByIngredient('${r.id}', ${index}, this.value.replace(',', '.'))"
+                           style="width: 55px; background: transparent; border: none; color: var(--acc); font-weight: 400; text-align: center; font-size: 1rem; outline: none; padding: 0; margin-right: 4px;">
+                    <b style="font-weight: 400;">${i.e === "g" ? "gr" : einheitText}</b>
+                </span>
             `;
         }
-        return `<li>${wertAnzeige} <span>${t(i.n)}</span></li>`;
+        return `<li style="display: flex; align-items: center;">${wertAnzeige} <span style="flex-grow: 1; padding-left: 15px;">${t(i.n)}</span></li>`;
     }).join('');
 }
+
 
 
 
